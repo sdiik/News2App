@@ -7,8 +7,8 @@
 
 import Auth0
 
-typealias loginResult = (Result<Credentials, Error>) -> Void
+typealias LoginResult = (Result<Credentials, Error>) -> Void
 
 protocol LoginRepository {
-    func login(email: String, password: String, result: @escaping loginResult)
+    func login(email: String, password: String, result: @escaping LoginResult)
 }

@@ -7,8 +7,8 @@
 
 import Auth0
 
-typealias registerResult = (Result<Credentials, Error>) -> Void
+typealias RegisterResult = (Result<Credentials, Error>) -> Void
 
 protocol RegisterRepository {
-    func register(email: String, password: String, result: @escaping registerResult)
+    func register(email: String, password: String, result: @escaping RegisterResult)
 }

@@ -12,7 +12,7 @@ class LoginUseCaseImpl: LoginUseCase {
         self.loginRepository = loginRepository
     }
 
-    func login(email: String, password: String, result: @escaping loginResult) {
+    func login(email: String, password: String, result: @escaping LoginResult) {
         loginRepository.login(email: email, password: password) { networkResult in
             switch networkResult {
             case let .success(data):

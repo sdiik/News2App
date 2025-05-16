@@ -21,3 +21,8 @@ opt_in_rules:
   - function_parameter_count
   - statement_position
   - colon
+
+excluded:
+  - Pods
+  - Carthage
+  - DerivedData

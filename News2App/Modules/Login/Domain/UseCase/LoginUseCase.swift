@@ -7,8 +7,8 @@
 
 import Auth0
 
-typealias loginUseCaseResult = (Result<Credentials, Error>) -> Void
+typealias LoginUseCaseResult = (Result<Credentials, Error>) -> Void
 
 protocol LoginUseCase {
-    func login(email: String, password: String, result: @escaping loginResult)
+    func login(email: String, password: String, result: @escaping LoginResult)
 }
