@@ -17,7 +17,7 @@ class LoginRepositoryImpl: LoginRepository {
         self.storage = storage
     }
 
-    func login(email: String, password: String, result: @escaping loginResult) {
+    func login(email: String, password: String, result: @escaping LoginResult) {
         authRepositoryProtocol.login(email: email, password: password) { networkResult in
             switch networkResult {
             case let .success(data):

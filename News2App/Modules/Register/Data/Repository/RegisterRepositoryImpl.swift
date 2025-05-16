@@ -17,7 +17,7 @@ class RegisterRepositoryImpl: RegisterRepository {
         self.storage = storage
     }
 
-    func register(email: String, password: String, result: @escaping registerResult) {
+    func register(email: String, password: String, result: @escaping RegisterResult) {
         authRepositoryProtocol.register(email: email, password: password) { networkResult in
             switch networkResult {
             case let .success(data):

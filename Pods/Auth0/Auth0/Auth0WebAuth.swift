@@ -273,7 +273,7 @@
     // MARK: - Combine
 
     @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.2, *)
-    public extension Auth0WebAuth {
+    extension Auth0WebAuth {
         func start() -> AnyPublisher<Credentials, WebAuthError> {
             return Deferred { Future(self.start) }.eraseToAnyPublisher()
         }
