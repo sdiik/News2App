@@ -7,17 +7,17 @@
 
 class RegisterUseCaseImpl: RegisterUseCase {
     let registerRepository: RegisterRepository
-    
+
     init(registerRepository: RegisterRepository = RegisterRepositoryImpl()) {
         self.registerRepository = registerRepository
     }
-    
+
     func register(email: String, password: String, result: @escaping registerUseCaseResult) {
         registerRepository.register(email: email, password: password) { networkResult in
             switch networkResult {
-            case .success(let data):
+            case let .success(data):
                 result(.success(data))
-            case .failure(let error):
+            case let .failure(error):
                 result(.failure(error))
             }
         }

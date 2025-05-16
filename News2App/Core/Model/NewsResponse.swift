@@ -6,7 +6,7 @@
 //
 
 import Foundation
- 
+
 struct NewsResponse: Decodable {
     let count: Int
     let next: String?
@@ -48,21 +48,20 @@ struct Launch: Decodable, Identifiable {
     let id = UUID()
     let launchId: String?
     let provider: String?
-        
+
     enum CodingKeys: String, CodingKey {
         case provider
         case launchId = "launch_id"
     }
 }
-        
+
 struct Event: Decodable, Identifiable {
     let id = UUID()
     let eventId: Int?
     let provider: String?
-        
+
     enum CodingKeys: String, CodingKey {
         case provider
         case eventId = "event_id"
     }
 }
-

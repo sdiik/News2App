@@ -25,6 +25,7 @@
 //  THE SOFTWARE.
 
 import Foundation
+
 /// A class that keeps a weakly reference for `self` when implementing `onXXX` behaviors.
 /// Instead of remembering to keep `self` as weak in a stored closure:
 ///
@@ -88,28 +89,28 @@ public class Delegate<Input, Output> {
     }
 }
 
-extension Delegate where Input == Void {
-    public func call() -> Output? {
+public extension Delegate where Input == Void {
+    func call() -> Output? {
         return call(())
     }
 
-    public func callAsFunction() -> Output? {
+    func callAsFunction() -> Output? {
         return call()
     }
 }
 
-extension Delegate where Input == Void, Output: OptionalProtocol {
-    public func call() -> Output {
+public extension Delegate where Input == Void, Output: OptionalProtocol {
+    func call() -> Output {
         return call(())
     }
 
-    public func callAsFunction() -> Output {
+    func callAsFunction() -> Output {
         return call()
     }
 }
 
-extension Delegate where Output: OptionalProtocol {
-    public func call(_ input: Input) -> Output {
+public extension Delegate where Output: OptionalProtocol {
+    func call(_ input: Input) -> Output {
         if let result = block?(input) {
             return result
         } else {
@@ -117,7 +118,7 @@ extension Delegate where Output: OptionalProtocol {
         }
     }
 
-    public func callAsFunction(_ input: Input) -> Output {
+    func callAsFunction(_ input: Input) -> Output {
         return call(input)
     }
 }
@@ -125,8 +126,9 @@ extension Delegate where Output: OptionalProtocol {
 public protocol OptionalProtocol {
     static var _createNil: Self { get }
 }
-extension Optional : OptionalProtocol {
+
+extension Optional: OptionalProtocol {
     public static var _createNil: Optional<Wrapped> {
-         return nil
+        return nil
     }
 }

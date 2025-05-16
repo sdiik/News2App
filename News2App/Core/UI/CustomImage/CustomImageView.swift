@@ -9,19 +9,19 @@ import SwiftUI
 
 struct CustomImageView: View {
     @ObservedObject var viewModel: CustomImageViewModel
-    
+
     var body: some View {
         AsyncImage(url: URL(string: viewModel.customImageModel.url)) { phase in
             switch phase {
             case .empty:
                 ProgressView()
-            case .success(let image):
+            case let .success(image):
                 image
                     .resizable()
                     .scaledToFill()
                     .frame(width: viewModel.customImageModel.width, height: viewModel.customImageModel.height)
                     .clipped()
-            case .failure(let error):
+            case let .failure(error):
                 Image(systemName: "icon_news")
                     .resizable()
                     .scaledToFit()

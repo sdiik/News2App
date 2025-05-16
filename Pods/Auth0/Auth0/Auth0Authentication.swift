@@ -1,7 +1,6 @@
 import Foundation
 
 struct Auth0Authentication: Authentication {
-
     let clientId: String
     let url: URL
     var telemetry: Telemetry
@@ -30,8 +29,8 @@ struct Auth0Authentication: Authentication {
             "username": username,
             "password": password,
             "grant_type": "http://auth0.com/oauth/grant-type/password-realm",
-            "client_id": self.clientId,
-            "realm": realm
+            "client_id": clientId,
+            "realm": realm,
         ]
         payload["audience"] = audience
         payload["scope"] = includeRequiredScope(in: scope)
@@ -40,8 +39,8 @@ struct Auth0Authentication: Authentication {
                        method: "POST",
                        handle: codable,
                        parameters: payload,
-                       logger: self.logger,
-                       telemetry: self.telemetry)
+                       logger: logger,
+                       telemetry: telemetry)
     }
 
     func loginDefaultDirectory(withUsername username: String, password: String, audience: String?, scope: String) -> Request<Credentials, AuthenticationError> {
@@ -50,7 +49,7 @@ struct Auth0Authentication: Authentication {
             "username": username,
             "password": password,
             "grant_type": "password",
-            "client_id": self.clientId
+            "client_id": clientId,
         ]
         payload["audience"] = audience
         payload["scope"] = includeRequiredScope(in: scope)
@@ -59,8 +58,8 @@ struct Auth0Authentication: Authentication {
                        method: "POST",
                        handle: codable,
                        parameters: payload,
-                       logger: self.logger,
-                       telemetry: self.telemetry)
+                       logger: logger,
+                       telemetry: telemetry)
     }
 
     func login(withOTP otp: String, mfaToken: String) -> Request<Credentials, AuthenticationError> {
@@ -69,15 +68,15 @@ struct Auth0Authentication: Authentication {
             "otp": otp,
             "mfa_token": mfaToken,
             "grant_type": "http://auth0.com/oauth/grant-type/mfa-otp",
-            "client_id": self.clientId
+            "client_id": clientId,
         ]
         return Request(session: session,
                        url: url,
                        method: "POST",
                        handle: codable,
                        parameters: payload,
-                       logger: self.logger,
-                       telemetry: self.telemetry)
+                       logger: logger,
+                       telemetry: telemetry)
     }
 
     func login(withOOBCode oobCode: String, mfaToken: String, bindingCode: String?) -> Request<Credentials, AuthenticationError> {
@@ -86,7 +85,7 @@ struct Auth0Authentication: Authentication {
             "oob_code": oobCode,
             "mfa_token": mfaToken,
             "grant_type": "http://auth0.com/oauth/grant-type/mfa-oob",
-            "client_id": self.clientId
+            "client_id": clientId,
         ]
 
         if let bindingCode = bindingCode {
@@ -98,8 +97,8 @@ struct Auth0Authentication: Authentication {
                        method: "POST",
                        handle: codable,
                        parameters: payload,
-                       logger: self.logger,
-                       telemetry: self.telemetry)
+                       logger: logger,
+                       telemetry: telemetry)
     }
 
     func login(withRecoveryCode recoveryCode: String, mfaToken: String) -> Request<Credentials, AuthenticationError> {
@@ -108,7 +107,7 @@ struct Auth0Authentication: Authentication {
             "recovery_code": recoveryCode,
             "mfa_token": mfaToken,
             "grant_type": "http://auth0.com/oauth/grant-type/mfa-recovery-code",
-            "client_id": self.clientId
+            "client_id": clientId,
         ]
 
         return Request(session: session,
@@ -116,15 +115,15 @@ struct Auth0Authentication: Authentication {
                        method: "POST",
                        handle: codable,
                        parameters: payload,
-                       logger: self.logger,
-                       telemetry: self.telemetry)
+                       logger: logger,
+                       telemetry: telemetry)
     }
 
     func multifactorChallenge(mfaToken: String, types: [String]?, authenticatorId: String?) -> Request<Challenge, AuthenticationError> {
         let url = URL(string: "mfa/challenge", relativeTo: self.url)!
         var payload: [String: String] = [
             "mfa_token": mfaToken,
-            "client_id": self.clientId
+            "client_id": clientId,
         ]
 
         if let types = types {
@@ -140,8 +139,8 @@ struct Auth0Authentication: Authentication {
                        method: "POST",
                        handle: codable,
                        parameters: payload,
-                       logger: self.logger,
-                       telemetry: self.telemetry)
+                       logger: logger,
+                       telemetry: telemetry)
     }
 
     func login(appleAuthorizationCode authorizationCode: String, fullName: PersonNameComponents?, profile: [String: Any]?, audience: String?, scope: String) -> Request<Credentials, AuthenticationError> {
@@ -156,28 +155,30 @@ struct Auth0Authentication: Authentication {
         }
 
         if !profile.isEmpty, let jsonData = try? JSONSerialization.data(withJSONObject: profile, options: []),
-            let json = String(data: jsonData, encoding: .utf8) {
+           let json = String(data: jsonData, encoding: .utf8)
+        {
             parameters["user_profile"] = json
         }
 
-        return self.tokenExchange(subjectToken: authorizationCode,
-                                  subjectTokenType: "http://auth0.com/oauth/token-type/apple-authz-code",
-                                  scope: scope,
-                                  audience: audience,
-                                  parameters: parameters)
+        return tokenExchange(subjectToken: authorizationCode,
+                             subjectTokenType: "http://auth0.com/oauth/token-type/apple-authz-code",
+                             scope: scope,
+                             audience: audience,
+                             parameters: parameters)
     }
 
     func login(facebookSessionAccessToken sessionAccessToken: String, profile: [String: Any], audience: String?, scope: String) -> Request<Credentials, AuthenticationError> {
         var parameters: [String: String] = [:]
         if let jsonData = try? JSONSerialization.data(withJSONObject: profile, options: []),
-            let json = String(data: jsonData, encoding: .utf8) {
+           let json = String(data: jsonData, encoding: .utf8)
+        {
             parameters["user_profile"] = json
         }
-        return self.tokenExchange(subjectToken: sessionAccessToken,
-                                  subjectTokenType: "http://auth0.com/oauth/token-type/facebook-info-session-access-token",
-                                  scope: scope,
-                                  audience: audience,
-                                  parameters: parameters)
+        return tokenExchange(subjectToken: sessionAccessToken,
+                             subjectTokenType: "http://auth0.com/oauth/token-type/facebook-info-session-access-token",
+                             scope: scope,
+                             audience: audience,
+                             parameters: parameters)
     }
 
     func signup(email: String, username: String? = nil, password: String, connection: String, userMetadata: [String: Any]? = nil, rootAttributes: [String: Any]? = nil) -> Request<DatabaseUser, AuthenticationError> {
@@ -185,40 +186,40 @@ struct Auth0Authentication: Authentication {
             "email": email,
             "password": password,
             "connection": connection,
-            "client_id": self.clientId
+            "client_id": clientId,
         ]
         payload["username"] = username
         payload["user_metadata"] = userMetadata
         if let rootAttributes = rootAttributes {
-            rootAttributes.forEach { (key, value) in
+            for (key, value) in rootAttributes {
                 if payload[key] == nil { payload[key] = value }
             }
         }
 
-        let signup = URL(string: "dbconnections/signup", relativeTo: self.url)!
+        let signup = URL(string: "dbconnections/signup", relativeTo: url)!
         return Request(session: session,
                        url: signup,
                        method: "POST",
                        handle: databaseUser,
                        parameters: payload,
-                       logger: self.logger,
-                       telemetry: self.telemetry)
+                       logger: logger,
+                       telemetry: telemetry)
     }
 
     func resetPassword(email: String, connection: String) -> Request<Void, AuthenticationError> {
         let payload = [
             "email": email,
             "connection": connection,
-            "client_id": self.clientId
+            "client_id": clientId,
         ]
-        let resetPassword = URL(string: "dbconnections/change_password", relativeTo: self.url)!
+        let resetPassword = URL(string: "dbconnections/change_password", relativeTo: url)!
         return Request(session: session,
                        url: resetPassword,
                        method: "POST",
                        handle: noBody,
                        parameters: payload,
-                       logger: self.logger,
-                       telemetry: self.telemetry)
+                       logger: logger,
+                       telemetry: telemetry)
     }
 
     func startPasswordless(email: String, type: PasswordlessType, connection: String) -> Request<Void, AuthenticationError> {
@@ -226,17 +227,17 @@ struct Auth0Authentication: Authentication {
             "email": email,
             "connection": connection,
             "send": type.rawValue,
-            "client_id": self.clientId
+            "client_id": clientId,
         ]
 
-        let start = URL(string: "passwordless/start", relativeTo: self.url)!
+        let start = URL(string: "passwordless/start", relativeTo: url)!
         return Request(session: session,
                        url: start,
                        method: "POST",
                        handle: noBody,
                        parameters: payload,
-                       logger: self.logger,
-                       telemetry: self.telemetry)
+                       logger: logger,
+                       telemetry: telemetry)
     }
 
     func startPasswordless(phoneNumber: String, type: PasswordlessType, connection: String) -> Request<Void, AuthenticationError> {
@@ -244,35 +245,35 @@ struct Auth0Authentication: Authentication {
             "phone_number": phoneNumber,
             "connection": connection,
             "send": type.rawValue,
-            "client_id": self.clientId
+            "client_id": clientId,
         ]
-        let start = URL(string: "passwordless/start", relativeTo: self.url)!
+        let start = URL(string: "passwordless/start", relativeTo: url)!
         return Request(session: session,
                        url: start,
                        method: "POST",
                        handle: noBody,
                        parameters: payload,
-                       logger: self.logger,
-                       telemetry: self.telemetry)
+                       logger: logger,
+                       telemetry: telemetry)
     }
 
     func userInfo(withAccessToken accessToken: String) -> Request<UserInfo, AuthenticationError> {
-        let userInfo = URL(string: "userinfo", relativeTo: self.url)!
+        let userInfo = URL(string: "userinfo", relativeTo: url)!
         return Request(session: session,
                        url: userInfo,
                        method: "GET",
                        handle: authenticationObject,
                        headers: ["Authorization": "Bearer \(accessToken)"],
-                       logger: self.logger,
-                       telemetry: self.telemetry)
+                       logger: logger,
+                       telemetry: telemetry)
     }
 
     func codeExchange(withCode code: String, codeVerifier: String, redirectURI: String) -> Request<Credentials, AuthenticationError> {
-        return self.token().parameters([
+        return token().parameters([
             "code": code,
             "code_verifier": codeVerifier,
             "redirect_uri": redirectURI,
-            "grant_type": "authorization_code"
+            "grant_type": "authorization_code",
         ])
     }
 
@@ -280,50 +281,48 @@ struct Auth0Authentication: Authentication {
         var payload: [String: Any] = [
             "refresh_token": refreshToken,
             "grant_type": "refresh_token",
-            "client_id": self.clientId
+            "client_id": clientId,
         ]
         payload["scope"] = scope
-        let oauthToken = URL(string: "oauth/token", relativeTo: self.url)!
+        let oauthToken = URL(string: "oauth/token", relativeTo: url)!
         return Request(session: session,
                        url: oauthToken,
                        method: "POST",
                        handle: codable,
                        parameters: payload, // Initializer does not enforce 'openid' scope
-                       logger: self.logger,
-                       telemetry: self.telemetry)
+                       logger: logger,
+                       telemetry: telemetry)
     }
 
     func revoke(refreshToken: String) -> Request<Void, AuthenticationError> {
         let payload: [String: Any] = [
             "token": refreshToken,
-            "client_id": self.clientId
+            "client_id": clientId,
         ]
-        let oauthToken = URL(string: "oauth/revoke", relativeTo: self.url)!
+        let oauthToken = URL(string: "oauth/revoke", relativeTo: url)!
         return Request(session: session,
                        url: oauthToken,
                        method: "POST",
                        handle: noBody,
                        parameters: payload,
-                       logger: self.logger,
-                       telemetry: self.telemetry)
+                       logger: logger,
+                       telemetry: telemetry)
     }
 
     func jwks() -> Request<JWKS, AuthenticationError> {
-        let jwks = URL(string: ".well-known/jwks.json", relativeTo: self.url)!
+        let jwks = URL(string: ".well-known/jwks.json", relativeTo: url)!
         return Request(session: session,
                        url: jwks,
                        method: "GET",
                        handle: codable,
-                       logger: self.logger,
-                       telemetry: self.telemetry)
+                       logger: logger,
+                       telemetry: telemetry)
     }
-
 }
 
 // MARK: - Private Methods
 
 private extension Auth0Authentication {
-
     func login(username: String, otp: String, realm: String, audience: String?, scope: String) -> Request<Credentials, AuthenticationError> {
         let url = URL(string: "oauth/token", relativeTo: self.url)!
         var payload: [String: Any] = [
@@ -331,7 +330,7 @@ private extension Auth0Authentication {
             "otp": otp,
             "realm": realm,
             "grant_type": "http://auth0.com/oauth/grant-type/passwordless/otp",
-            "client_id": self.clientId
+            "client_id": clientId,
         ]
         payload["audience"] = audience
         payload["scope"] = includeRequiredScope(in: scope)
@@ -340,22 +339,22 @@ private extension Auth0Authentication {
                        method: "POST",
                        handle: codable,
                        parameters: payload,
-                       logger: self.logger,
-                       telemetry: self.telemetry)
+                       logger: logger,
+                       telemetry: telemetry)
     }
 
     func token() -> Request<Credentials, AuthenticationError> {
         let payload: [String: Any] = [
-            "client_id": self.clientId
+            "client_id": clientId,
         ]
-        let token = URL(string: "oauth/token", relativeTo: self.url)!
+        let token = URL(string: "oauth/token", relativeTo: url)!
         return Request(session: session,
                        url: token,
                        method: "POST",
                        handle: codable,
                        parameters: payload,
-                       logger: self.logger,
-                       telemetry: self.telemetry)
+                       logger: logger,
+                       telemetry: telemetry)
     }
 
     func tokenExchange(subjectToken: String, subjectTokenType: String, scope: String, audience: String?, parameters: [String: Any] = [:]) -> Request<Credentials, AuthenticationError> {
@@ -365,7 +364,6 @@ private extension Auth0Authentication {
         parameters["subject_token_type"] = subjectTokenType
         parameters["audience"] = audience
         parameters["scope"] = scope
-        return self.token().parameters(parameters) // parameters() enforces 'openid' scope
+        return token().parameters(parameters) // parameters() enforces 'openid' scope
     }
-
 }

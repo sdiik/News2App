@@ -2,14 +2,11 @@ import Foundation
 
 /// A type that can log statements for debugging purposes.
 public protocol Loggable {
-
     /// Logger used to print log statements.
     var logger: Logger? { get set }
-
 }
 
 public extension Loggable {
-
     /**
      Turn on Auth0.swift debug logging of HTTP requests and responses with a custom logger.
 
@@ -39,5 +36,4 @@ public extension Loggable {
         }
         return loggable
     }
-
 }

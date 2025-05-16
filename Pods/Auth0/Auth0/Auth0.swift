@@ -11,10 +11,10 @@ public typealias AuthenticationResult<T> = Result<T, AuthenticationError>
 public typealias ManagementResult<T> = Result<T, ManagementError>
 
 #if WEB_AUTH_PLATFORM
-/**
- `Result` wrapper for Web Auth operations.
- */
-public typealias WebAuthResult<T> = Result<T, WebAuthError>
+    /**
+     `Result` wrapper for Web Auth operations.
+     */
+    public typealias WebAuthResult<T> = Result<T, WebAuthError>
 #endif
 
 /**
@@ -58,16 +58,16 @@ public func authentication(clientId: String, domain: String, session: URLSession
 
  The Auth0 Client ID & Domain are loaded from the `Auth0.plist` file in your main bundle. It should have the following
  content:
- 
+
  ```xml
  <?xml version="1.0" encoding="UTF-8"?>
  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
  <plist version="1.0">
  <dict>
-	  <key>ClientId</key>
-	  <string>YOUR_AUTH0_CLIENT_ID</string>
-	  <key>Domain</key>
-	  <string>YOUR_AUTH0_DOMAIN</string>
+ <key>ClientId</key>
+ <string>YOUR_AUTH0_CLIENT_ID</string>
+ <key>Domain</key>
+ <string>YOUR_AUTH0_DOMAIN</string>
  </dict>
  </plist>
  ```
@@ -107,10 +107,10 @@ public func authentication(session: URLSession = .shared, bundle: Bundle = .main
  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
  <plist version="1.0">
  <dict>
-	  <key>ClientId</key>
-	  <string>YOUR_AUTH0_CLIENT_ID</string>
-	  <key>Domain</key>
-	  <string>YOUR_AUTH0_DOMAIN</string>
+ <key>ClientId</key>
+ <string>YOUR_AUTH0_CLIENT_ID</string>
+ <key>Domain</key>
+ <string>YOUR_AUTH0_DOMAIN</string>
  </dict>
  </plist>
  ```
@@ -138,7 +138,7 @@ public func users(token: String, session: URLSession = .shared, bundle: Bundle =
  ```
 
  Currently you can only perform the following operations:
- 
+
  * Get a user by ID
  * Update an user, for example by adding `user_metadata`
  * Link users
@@ -155,72 +155,73 @@ public func users(token: String, domain: String, session: URLSession = .shared) 
 }
 
 #if WEB_AUTH_PLATFORM
-/**
- Auth0 client for performing web-based authentication with [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login).
+    /**
+     Auth0 client for performing web-based authentication with [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login).
 
- ## Usage
+     ## Usage
 
- ```swift
- Auth0.webAuth()
- ```
+     ```swift
+     Auth0.webAuth()
+     ```
 
- The Auth0 Domain is loaded from the `Auth0.plist` file in your main bundle. It should have the following content:
+     The Auth0 Domain is loaded from the `Auth0.plist` file in your main bundle. It should have the following content:
 
- ```xml
- <?xml version="1.0" encoding="UTF-8"?>
- <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
- <plist version="1.0">
- <dict>
-    <key>ClientId</key>
-    <string>YOUR_AUTH0_CLIENT_ID</string>
-    <key>Domain</key>
-    <string>YOUR_AUTH0_DOMAIN</string>
- </dict>
- </plist>
- ```
+     ```xml
+     <?xml version="1.0" encoding="UTF-8"?>
+     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+     <plist version="1.0">
+     <dict>
+        <key>ClientId</key>
+        <string>YOUR_AUTH0_CLIENT_ID</string>
+        <key>Domain</key>
+        <string>YOUR_AUTH0_DOMAIN</string>
+     </dict>
+     </plist>
+     ```
 
- - Parameters:
-   - session: `URLSession` instance used for networking. Defaults to `URLSession.shared`.
-   - bundle:  Bundle used to locate the `Auth0.plist` file. Defaults to `Bundle.main`.
- - Returns: Auth0 Web Auth client.
- - Warning: Calling this method without a valid `Auth0.plist` file will crash your application.
- */
-public func webAuth(session: URLSession = .shared, bundle: Bundle = Bundle.main) -> WebAuth {
-    let values = plistValues(bundle: bundle)!
-    return webAuth(clientId: values.clientId, domain: values.domain, session: session)
-}
+     - Parameters:
+       - session: `URLSession` instance used for networking. Defaults to `URLSession.shared`.
+       - bundle:  Bundle used to locate the `Auth0.plist` file. Defaults to `Bundle.main`.
+     - Returns: Auth0 Web Auth client.
+     - Warning: Calling this method without a valid `Auth0.plist` file will crash your application.
+     */
+    public func webAuth(session: URLSession = .shared, bundle: Bundle = Bundle.main) -> WebAuth {
+        let values = plistValues(bundle: bundle)!
+        return webAuth(clientId: values.clientId, domain: values.domain, session: session)
+    }
 
-/**
- Auth0 client for performing web-based authentication with [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login).
+    /**
+     Auth0 client for performing web-based authentication with [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login).
 
- ## Usage
+     ## Usage
 
- ```swift
- Auth0.webAuth(clientId: "client-id", domain: "samples.us.auth0.com")
- ```
+     ```swift
+     Auth0.webAuth(clientId: "client-id", domain: "samples.us.auth0.com")
+     ```
 
- - Parameters:
-   - clientId: Client ID of your Auth0 application.
-   - domain:   Domain of your Auth0 account, for example `samples.us.auth0.com`.
-   - session:  `URLSession` instance used for networking. Defaults to `URLSession.shared`.
- - Returns: Auth0 Web Auth client.
- */
-public func webAuth(clientId: String, domain: String, session: URLSession = .shared) -> WebAuth {
-    return Auth0WebAuth(clientId: clientId, url: .httpsURL(from: domain), session: session)
-}
+     - Parameters:
+       - clientId: Client ID of your Auth0 application.
+       - domain:   Domain of your Auth0 account, for example `samples.us.auth0.com`.
+       - session:  `URLSession` instance used for networking. Defaults to `URLSession.shared`.
+     - Returns: Auth0 Web Auth client.
+     */
+    public func webAuth(clientId: String, domain: String, session: URLSession = .shared) -> WebAuth {
+        return Auth0WebAuth(clientId: clientId, url: .httpsURL(from: domain), session: session)
+    }
 #endif
 
 func plistValues(bundle: Bundle) -> (clientId: String, domain: String)? {
     guard let path = bundle.path(forResource: "Auth0", ofType: "plist"),
-          let values = NSDictionary(contentsOfFile: path) as? [String: Any] else {
-            print("Missing Auth0.plist file with 'ClientId' and 'Domain' entries in main bundle!")
-            return nil
-        }
+          let values = NSDictionary(contentsOfFile: path) as? [String: Any]
+    else {
+        print("Missing Auth0.plist file with 'ClientId' and 'Domain' entries in main bundle!")
+        return nil
+    }
 
     guard let clientId = values["ClientId"] as? String, let domain = values["Domain"] as? String else {
-            print("Auth0.plist file at \(path) is missing 'ClientId' and/or 'Domain' entries!")
-            print("File currently has the following entries: \(values)")
-            return nil
-        }
+        print("Auth0.plist file at \(path) is missing 'ClientId' and/or 'Domain' entries!")
+        print("File currently has the following entries: \(values)")
+        return nil
+    }
     return (clientId: clientId, domain: domain)
 }

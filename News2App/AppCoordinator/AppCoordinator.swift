@@ -5,13 +5,13 @@
 //  Created by ahmad shiddiq on 01/05/25.
 //
 
-import SwiftUI
 import Combine
+import SwiftUI
 
 class AppCoordinator: ObservableObject {
     @Published var path: [Route] = []
     @Published var isLoggedIn: Bool = false
-    
+
     let credentialsStorage = CredentialsStorage()
     private var cancellables: Set<AnyCancellable> = []
 
@@ -21,45 +21,45 @@ class AppCoordinator: ObservableObject {
         case home
         case detail(id: Int, detailType: DetailType)
     }
-    
+
     init() {
         print("AppCoordinator initialized")
         startTokenMonitor()
     }
-    
+
     func checkLoginStatus() {
         if credentialsStorage.isExpired() {
             handleLogout()
         } else {
-            self.isLoggedIn = true
+            isLoggedIn = true
             path = [.home]
         }
     }
-    
+
     func checkExpired() {
         if credentialsStorage.isExpired() {
             handleLogout()
         }
     }
-    
+
     private func handleLogout() {
         credentialsStorage.clear()
         isLoggedIn = false
         path = [.login]
     }
-    
+
     func navigate(to route: Route) {
         path.append(route)
     }
-    
+
     func goBack() {
         _ = path.popLast()
     }
-    
+
     func reset() {
         path = []
     }
-    
+
     private func startTokenMonitor() {
         Timer.publish(every: 2, on: .main, in: .common)
             .autoconnect()
@@ -71,5 +71,4 @@ class AppCoordinator: ObservableObject {
             }
             .store(in: &cancellables)
     }
-   
 }

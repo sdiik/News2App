@@ -1,8 +1,7 @@
 import Foundation
 
 /// User attributes that can be updated using the ``Users/patch(_:attributes:)`` method of ``Users``.
-final public class UserPatchAttributes {
-
+public final class UserPatchAttributes {
     private(set) var dictionary: [String: Any]
 
     /**
@@ -144,5 +143,4 @@ final public class UserPatchAttributes {
         dictionary["app_metadata"] = metadata
         return self
     }
-
 }

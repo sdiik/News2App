@@ -13,7 +13,6 @@ private struct _StructCredentials {
 /// User's credentials obtained from Auth0.
 @objc(A0Credentials)
 public final class Credentials: NSObject {
-
     /// Token that can be used to make authenticated requests to the specified API (the **audience** value used on login).
     ///
     /// ## See Also
@@ -67,15 +66,15 @@ public final class Credentials: NSObject {
     public let recoveryCode: String?
 
     /// Custom description that redacts the tokens with `<REDACTED>`.
-    public override var description: String {
+    override public var description: String {
         let redacted = "<REDACTED>"
         let values = _StructCredentials(accessToken: redacted,
-                                       tokenType: self.tokenType,
-                                       idToken: redacted,
-                                       refreshToken: (self.refreshToken != nil) ? redacted : nil,
-                                       expiresIn: self.expiresIn,
-                                       scope: self.scope,
-                                       recoveryCode: (self.recoveryCode != nil) ? redacted : nil)
+                                        tokenType: tokenType,
+                                        idToken: redacted,
+                                        refreshToken: (refreshToken != nil) ? redacted : nil,
+                                        expiresIn: expiresIn,
+                                        scope: scope,
+                                        recoveryCode: (recoveryCode != nil) ? redacted : nil)
         return String(describing: values).replacingOccurrences(of: "_StructCredentials", with: "Credentials")
     }
 
@@ -88,7 +87,8 @@ public final class Credentials: NSObject {
                 refreshToken: String? = nil,
                 expiresIn: Date = Date(),
                 scope: String? = nil,
-                recoveryCode: String? = nil) {
+                recoveryCode: String? = nil)
+    {
         self.accessToken = accessToken
         self.tokenType = tokenType
         self.idToken = idToken
@@ -97,13 +97,11 @@ public final class Credentials: NSObject {
         self.scope = scope
         self.recoveryCode = recoveryCode
     }
-
 }
 
 // MARK: - Codable
 
 extension Credentials: Codable {
-
     enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
         case tokenType = "token_type"
@@ -141,13 +139,11 @@ extension Credentials: Codable {
                   scope: scope,
                   recoveryCode: recoveryCode)
     }
-
 }
 
 // MARK: - NSSecureCoding
 
 extension Credentials: NSSecureCoding {
-
     /// `NSSecureCoding` decoding initializer.
     public convenience init?(coder aDecoder: NSCoder) {
         let accessToken = aDecoder.decodeObject(of: NSString.self, forKey: "accessToken")
@@ -169,16 +165,15 @@ extension Credentials: NSSecureCoding {
 
     /// `NSSecureCoding` encoding method.
     public func encode(with aCoder: NSCoder) {
-        aCoder.encode(self.accessToken as NSString, forKey: "accessToken")
-        aCoder.encode(self.tokenType as NSString, forKey: "tokenType")
-        aCoder.encode(self.idToken as NSString, forKey: "idToken")
-        aCoder.encode(self.refreshToken as NSString?, forKey: "refreshToken")
-        aCoder.encode(self.expiresIn as NSDate, forKey: "expiresIn")
-        aCoder.encode(self.scope as NSString?, forKey: "scope")
-        aCoder.encode(self.recoveryCode as NSString?, forKey: "recoveryCode")
+        aCoder.encode(accessToken as NSString, forKey: "accessToken")
+        aCoder.encode(tokenType as NSString, forKey: "tokenType")
+        aCoder.encode(idToken as NSString, forKey: "idToken")
+        aCoder.encode(refreshToken as NSString?, forKey: "refreshToken")
+        aCoder.encode(expiresIn as NSDate, forKey: "expiresIn")
+        aCoder.encode(scope as NSString?, forKey: "scope")
+        aCoder.encode(recoveryCode as NSString?, forKey: "recoveryCode")
     }
 
     /// Property that enables secure coding. Equals to `true`.
     public static var supportsSecureCoding: Bool { return true }
-
 }

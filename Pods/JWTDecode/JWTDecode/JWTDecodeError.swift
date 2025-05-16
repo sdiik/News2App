@@ -14,23 +14,23 @@ public enum JWTDecodeError: LocalizedError, CustomDebugStringConvertible {
     /// Description of the error.
     ///
     /// - Important: You should avoid displaying the error description to the user, it's meant for **debugging** only.
-    public var localizedDescription: String { return self.debugDescription }
+    public var localizedDescription: String { return debugDescription }
 
     /// Description of the error.
     ///
     /// - Important: You should avoid displaying the error description to the user, it's meant for **debugging** only.
-    public var errorDescription: String? { return self.debugDescription }
+    public var errorDescription: String? { return debugDescription }
 
     /// Description of the error.
     ///
     /// - Important: You should avoid displaying the error description to the user, it's meant for **debugging** only.
     public var debugDescription: String {
         switch self {
-        case .invalidJSON(let value):
+        case let .invalidJSON(value):
             return "Failed to parse JSON from Base64URL value \(value)."
-        case .invalidPartCount(let jwt, let parts):
+        case let .invalidPartCount(jwt, parts):
             return "The JWT \(jwt) has \(parts) parts when it should have 3 parts."
-        case .invalidBase64URL(let value):
+        case let .invalidBase64URL(value):
             return "Failed to decode Base64URL value \(value)."
         }
     }

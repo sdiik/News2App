@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AppCoordinatorView: View {
     @EnvironmentObject var coordinator: AppCoordinator
-    
+
     var body: some View {
         NavigationStack(path: $coordinator.path) {
             VStack {

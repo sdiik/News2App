@@ -10,7 +10,7 @@ import SwiftUI
 class CustomImageViewModel: ObservableObject {
     @Published var customImageModel: CustomImageModel
     private let imageLoadingUseCase: CustomImageUseCase
-    
+
     init(
         customImageModel: CustomImageModel,
         imageLoadingUseCase: CustomImageUseCase = CustomImageUseCaseImpl()
@@ -18,12 +18,12 @@ class CustomImageViewModel: ObservableObject {
         self.customImageModel = customImageModel
         self.imageLoadingUseCase = imageLoadingUseCase
     }
-    
+
     func loading() {
-        self.customImageModel.imagePhase = imageLoadingUseCase.loadImage(from: self.customImageModel.url)
+        customImageModel.imagePhase = imageLoadingUseCase.loadImage(from: customImageModel.url)
     }
-    
+
     func updateConfiguration(_ url: String) {
-        self.customImageModel.url = url
+        customImageModel.url = url
     }
 }

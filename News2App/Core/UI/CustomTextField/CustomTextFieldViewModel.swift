@@ -13,18 +13,19 @@ class CustomTextFieldViewModel: ObservableObject {
             validate()
         }
     }
+
     @Published var errorMessage: String? = nil
-    
+
     let config: CustomTextFieldConfiguration
-    
+
     init(config: CustomTextFieldConfiguration) {
         self.config = config
     }
-    
+
     var isValid: Bool {
         errorMessage == nil && !text.trimmingCharacters(in: .whitespaces).isEmpty
     }
-    
+
     private func validate() {
         switch config.validationType {
         case .email:

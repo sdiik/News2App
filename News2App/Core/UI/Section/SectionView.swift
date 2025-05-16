@@ -9,14 +9,14 @@ import SwiftUI
 
 struct SectionView: View {
     @ObservedObject var viewModel: SectionViewModel
-    
+
     var body: some View {
         VStack {
             sectionHeader
             sectionBody
         }
     }
-    
+
     private var sectionHeader: some View {
         HStack {
             CustomTextView(viewModel: viewModel.title)
@@ -29,11 +29,11 @@ struct SectionView: View {
         }
         .padding(.horizontal)
     }
-    
+
     private var sectionBody: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 16) {
-                ForEach(Array(viewModel.blogs.enumerated()), id: \.offset) { index, item in
+                ForEach(Array(viewModel.blogs.enumerated()), id: \.offset) { index, _ in
                     if index < viewModel.images.count {
                         CustomImageView(viewModel: viewModel.images[index])
                     }

@@ -8,19 +8,18 @@
 import Alamofire
 
 struct NetworkRepositoryImpl: NetworkRepository {
-    
     let session: Session
-    
+
     init(session: Session = AF) {
         self.session = session
     }
-    
+
     func fetchRequest(_ url: URL, result: @escaping FetchRequestResult) {
         session.request(url)
             .validate()
             .responseData { response in
                 switch response.result {
-                case .success(let data):
+                case let .success(data):
                     if let httpResponse = response.response {
                         do {
                             let json = try JSONSerialization.jsonObject(with: data, options: [])
@@ -32,7 +31,7 @@ struct NetworkRepositoryImpl: NetworkRepository {
                         let error = NSError(domain: "Error", code: 0, userInfo: nil)
                         result(.failure(error))
                     }
-                case .failure(let error):
+                case let .failure(error):
                     result(.failure(error))
                 }
             }

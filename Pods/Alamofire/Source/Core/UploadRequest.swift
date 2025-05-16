@@ -71,7 +71,8 @@ public final class UploadRequest: DataRequest, @unchecked Sendable {
          eventMonitor: (any EventMonitor)?,
          interceptor: (any RequestInterceptor)?,
          fileManager: FileManager,
-         delegate: any RequestDelegate) {
+         delegate: any RequestDelegate)
+    {
         upload = convertible
         self.fileManager = fileManager
 

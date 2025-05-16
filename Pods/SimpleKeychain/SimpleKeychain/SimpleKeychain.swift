@@ -1,7 +1,7 @@
 import Foundation
 import Security
 #if canImport(LocalAuthentication)
-import LocalAuthentication
+    import LocalAuthentication
 #endif
 
 typealias RetrieveFunction = (_ query: CFDictionary, _ result: UnsafeMutablePointer<CFTypeRef?>?) -> OSStatus
@@ -21,56 +21,58 @@ public struct SimpleKeychain {
     var remove: RemoveFunction = SecItemDelete
 
     #if canImport(LocalAuthentication) && !os(tvOS)
-    let context: LAContext?
+        let context: LAContext?
 
-    /// Initializes a ``SimpleKeychain`` instance.
-    ///
-    /// - Parameter service: Name of the service under which to save items. Defaults to the bundle identifier.
-    /// - Parameter accessGroup: access group for sharing Keychain items. Defaults to `nil`.
-    /// - Parameter accessibility: ``Accessibility`` type the stored items will have. Defaults to ``Accessibility/afterFirstUnlock``.
-    /// - Parameter accessControlFlags: Access control conditions for `kSecAttrAccessControl`.  Defaults to `nil`.
-    /// - Parameter context: `LAContext` used to access Keychain items. Defaults to `nil`.
-    /// - Parameter synchronizable: Whether the items should be synchronized through iCloud. Defaults to `false`.
-    /// - Parameter attributes: Additional attributes to include in every query. Defaults to an empty dictionary.
-    /// - Returns: A ``SimpleKeychain`` instance.
-    public init(service: String = Bundle.main.bundleIdentifier!,
-                accessGroup: String? = nil,
-                accessibility: Accessibility = .afterFirstUnlock,
-                accessControlFlags: SecAccessControlCreateFlags? = nil,
-                context: LAContext? = nil,
-                synchronizable: Bool = false,
-                attributes: [String: Any] = [:]) {
-        self.service = service
-        self.accessGroup = accessGroup
-        self.accessibility = accessibility
-        self.accessControlFlags = accessControlFlags
-        self.context = context
-        self.isSynchronizable = synchronizable
-        self.attributes = attributes
-    }
+        /// Initializes a ``SimpleKeychain`` instance.
+        ///
+        /// - Parameter service: Name of the service under which to save items. Defaults to the bundle identifier.
+        /// - Parameter accessGroup: access group for sharing Keychain items. Defaults to `nil`.
+        /// - Parameter accessibility: ``Accessibility`` type the stored items will have. Defaults to ``Accessibility/afterFirstUnlock``.
+        /// - Parameter accessControlFlags: Access control conditions for `kSecAttrAccessControl`.  Defaults to `nil`.
+        /// - Parameter context: `LAContext` used to access Keychain items. Defaults to `nil`.
+        /// - Parameter synchronizable: Whether the items should be synchronized through iCloud. Defaults to `false`.
+        /// - Parameter attributes: Additional attributes to include in every query. Defaults to an empty dictionary.
+        /// - Returns: A ``SimpleKeychain`` instance.
+        public init(service: String = Bundle.main.bundleIdentifier!,
+                    accessGroup: String? = nil,
+                    accessibility: Accessibility = .afterFirstUnlock,
+                    accessControlFlags: SecAccessControlCreateFlags? = nil,
+                    context: LAContext? = nil,
+                    synchronizable: Bool = false,
+                    attributes: [String: Any] = [:])
+        {
+            self.service = service
+            self.accessGroup = accessGroup
+            self.accessibility = accessibility
+            self.accessControlFlags = accessControlFlags
+            self.context = context
+            isSynchronizable = synchronizable
+            self.attributes = attributes
+        }
     #else
-    /// Initializes a ``SimpleKeychain`` instance.
-    ///
-    /// - Parameter service: Name of the service under which to save items. Defaults to the bundle identifier.
-    /// - Parameter accessGroup: access group for sharing Keychain items. Defaults to `nil`.
-    /// - Parameter accessibility: ``Accessibility`` type the stored items will have. Defaults to ``Accessibility/afterFirstUnlock``.
-    /// - Parameter accessControlFlags: Access control conditions for `kSecAttrAccessControl`.  Defaults to `nil`.
-    /// - Parameter synchronizable: Whether the items should be synchronized through iCloud. Defaults to `false`.
-    /// - Parameter attributes: Additional attributes to include in every query. Defaults to an empty dictionary.
-    /// - Returns: A ``SimpleKeychain`` instance.
-    public init(service: String = Bundle.main.bundleIdentifier!,
-                accessGroup: String? = nil,
-                accessibility: Accessibility = .afterFirstUnlock,
-                accessControlFlags: SecAccessControlCreateFlags? = nil,
-                synchronizable: Bool = false,
-                attributes: [String: Any] = [:]) {
-        self.service = service
-        self.accessGroup = accessGroup
-        self.accessibility = accessibility
-        self.accessControlFlags = accessControlFlags
-        self.isSynchronizable = synchronizable
-        self.attributes = attributes
-    }
+        /// Initializes a ``SimpleKeychain`` instance.
+        ///
+        /// - Parameter service: Name of the service under which to save items. Defaults to the bundle identifier.
+        /// - Parameter accessGroup: access group for sharing Keychain items. Defaults to `nil`.
+        /// - Parameter accessibility: ``Accessibility`` type the stored items will have. Defaults to ``Accessibility/afterFirstUnlock``.
+        /// - Parameter accessControlFlags: Access control conditions for `kSecAttrAccessControl`.  Defaults to `nil`.
+        /// - Parameter synchronizable: Whether the items should be synchronized through iCloud. Defaults to `false`.
+        /// - Parameter attributes: Additional attributes to include in every query. Defaults to an empty dictionary.
+        /// - Returns: A ``SimpleKeychain`` instance.
+        public init(service: String = Bundle.main.bundleIdentifier!,
+                    accessGroup: String? = nil,
+                    accessibility: Accessibility = .afterFirstUnlock,
+                    accessControlFlags: SecAccessControlCreateFlags? = nil,
+                    synchronizable: Bool = false,
+                    attributes: [String: Any] = [:])
+        {
+            self.service = service
+            self.accessGroup = accessGroup
+            self.accessibility = accessibility
+            self.accessControlFlags = accessControlFlags
+            isSynchronizable = synchronizable
+            self.attributes = attributes
+        }
     #endif
 
     private func assertSuccess(forStatus status: OSStatus) throws {
@@ -113,7 +115,7 @@ public extension SimpleKeychain {
     /// - Returns: The `Data` value.
     /// - Throws: A ``SimpleKeychainError`` when the SimpleKeychain operation fails.
     func data(forKey key: String) throws -> Data {
-        let query = self.getOneQuery(byKey: key)
+        let query = getOneQuery(byKey: key)
         var result: AnyObject?
         try assertSuccess(forStatus: retrieve(query as CFDictionary, &result))
 
@@ -139,7 +141,7 @@ public extension SimpleKeychain {
     /// - Parameter key: Key for the Keychain item.
     /// - Throws: A ``SimpleKeychainError`` when the SimpleKeychain operation fails.
     func set(_ string: String, forKey key: String) throws {
-        return try self.set(Data(string.utf8), forKey: key)
+        return try set(Data(string.utf8), forKey: key)
     }
 
     /// Saves a `Data` value with the type `kSecClassGenericPassword` in the Keychain.
@@ -152,11 +154,11 @@ public extension SimpleKeychain {
     /// - Parameter key: Key for the Keychain item.
     /// - Throws: A ``SimpleKeychainError`` when the SimpleKeychain operation fails.
     func set(_ data: Data, forKey key: String) throws {
-        let addItemQuery = self.setQuery(forKey: key, data: data)
+        let addItemQuery = setQuery(forKey: key, data: data)
         let addStatus = SecItemAdd(addItemQuery as CFDictionary, nil)
 
         if addStatus == SimpleKeychainError.duplicateItem.status {
-            let updateQuery = self.baseQuery(withKey: key)
+            let updateQuery = baseQuery(withKey: key)
             let updateAttributes: [String: Any] = [kSecValueData as String: data]
             let updateStatus = SecItemUpdate(updateQuery as CFDictionary, updateAttributes as CFDictionary)
             try assertSuccess(forStatus: updateStatus)
@@ -178,7 +180,7 @@ public extension SimpleKeychain {
     /// - Parameter key: Key of the Keychain item to delete..
     /// - Throws: A ``SimpleKeychainError`` when the SimpleKeychain operation fails.
     func deleteItem(forKey key: String) throws {
-        let query = self.baseQuery(withKey: key)
+        let query = baseQuery(withKey: key)
         try assertSuccess(forStatus: remove(query as CFDictionary))
     }
 
@@ -190,9 +192,9 @@ public extension SimpleKeychain {
     ///
     /// - Throws: A ``SimpleKeychainError`` when the SimpleKeychain operation fails.
     func deleteAll() throws {
-        var query = self.baseQuery()
+        var query = baseQuery()
         #if os(macOS)
-        query[kSecMatchLimit as String] = kSecMatchLimitAll
+            query[kSecMatchLimit as String] = kSecMatchLimitAll
         #endif
         let status = remove(query as CFDictionary)
         guard SimpleKeychainError.Code(rawValue: status) != SimpleKeychainError.Code.itemNotFound else { return }
@@ -213,7 +215,7 @@ public extension SimpleKeychain {
     /// - Returns: Whether the item is stored in the Keychain or not.
     /// - Throws: A ``SimpleKeychainError`` when the SimpleKeychain operation fails.
     func hasItem(forKey key: String) throws -> Bool {
-        let query = self.baseQuery(withKey: key)
+        let query = baseQuery(withKey: key)
         let status = retrieve(query as CFDictionary, nil)
 
         if status == SimpleKeychainError.itemNotFound.status {
@@ -233,7 +235,7 @@ public extension SimpleKeychain {
     /// - Returns: A `String` array containing the keys.
     /// - Throws: A ``SimpleKeychainError`` when the SimpleKeychain operation fails.
     func keys() throws -> [String] {
-        let query = self.getAllQuery
+        let query = getAllQuery
         var keys: [String] = []
         var result: AnyObject?
         let status = retrieve(query as CFDictionary, &result)
@@ -259,9 +261,9 @@ public extension SimpleKeychain {
 
 extension SimpleKeychain {
     func baseQuery(withKey key: String? = nil, data: Data? = nil) -> [String: Any] {
-        var query = self.attributes
+        var query = attributes
         query[kSecClass as String] = kSecClassGenericPassword
-        query[kSecAttrService as String] = self.service
+        query[kSecAttrService as String] = service
 
         if let key = key {
             query[kSecAttrAccount as String] = key
@@ -269,15 +271,15 @@ extension SimpleKeychain {
         if let data = data {
             query[kSecValueData as String] = data
         }
-        if let accessGroup = self.accessGroup {
+        if let accessGroup = accessGroup {
             query[kSecAttrAccessGroup as String] = accessGroup
         }
         #if canImport(LocalAuthentication) && !os(tvOS)
-        if let context = self.context {
-            query[kSecUseAuthenticationContext as String] = context
-        }
+            if let context = context {
+                query[kSecUseAuthenticationContext as String] = context
+            }
         #endif
-        if self.isSynchronizable {
+        if isSynchronizable {
             query[kSecAttrSynchronizable as String] = kCFBooleanTrue
         }
 
@@ -285,33 +287,34 @@ extension SimpleKeychain {
     }
 
     var getAllQuery: [String: Any] {
-        var query = self.baseQuery()
+        var query = baseQuery()
         query[kSecReturnAttributes as String] = kCFBooleanTrue
         query[kSecMatchLimit as String] = kSecMatchLimitAll
         return query
     }
 
     func getOneQuery(byKey key: String) -> [String: Any] {
-        var query = self.baseQuery(withKey: key)
+        var query = baseQuery(withKey: key)
         query[kSecReturnData as String] = kCFBooleanTrue
         query[kSecMatchLimit as String] = kSecMatchLimitOne
         return query
     }
 
     func setQuery(forKey key: String, data: Data) -> [String: Any] {
-        var query = self.baseQuery(withKey: key, data: data)
+        var query = baseQuery(withKey: key, data: data)
 
-        if let flags = self.accessControlFlags,
-           let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault, self.accessibility.rawValue, flags, nil) {
+        if let flags = accessControlFlags,
+           let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.rawValue, flags, nil)
+        {
             query[kSecAttrAccessControl as String] = access
         } else {
             #if os(macOS)
-            // See https://developer.apple.com/documentation/security/ksecattraccessible
-            if self.isSynchronizable || query[kSecUseDataProtectionKeychain as String] as? Bool == true {
-                query[kSecAttrAccessible as String] = self.accessibility.rawValue
-            }
+                // See https://developer.apple.com/documentation/security/ksecattraccessible
+                if isSynchronizable || query[kSecUseDataProtectionKeychain as String] as? Bool == true {
+                    query[kSecAttrAccessible as String] = accessibility.rawValue
+                }
             #else
-            query[kSecAttrAccessible as String] = self.accessibility.rawValue
+                query[kSecAttrAccessible as String] = accessibility.rawValue
             #endif
         }
 

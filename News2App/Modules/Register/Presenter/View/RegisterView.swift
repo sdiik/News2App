@@ -10,7 +10,7 @@ import SwiftUI
 struct RegisterView: View {
     @ObservedObject var viewModel: RegisterViewModel
     @EnvironmentObject var coordinator: AppCoordinator
-    
+
     var body: some View {
         VStack(spacing: 24) {
             headerSection
@@ -21,7 +21,7 @@ struct RegisterView: View {
         .padding(.horizontal)
         .navigationBarHidden(true)
     }
-    
+
     private var headerSection: some View {
         VStack(spacing: 8) {
             Image("icon_news")
@@ -32,18 +32,18 @@ struct RegisterView: View {
             Text("Create your account to get the latest updates and features").font(.system(size: 16, weight: .regular)).multilineTextAlignment(.center)
         }
     }
-    
+
     private var formSection: some View {
         VStack(spacing: 8) {
             CustomTextField(viewModel: viewModel.emailField)
             CustomTextField(viewModel: viewModel.passwordField)
         }
     }
-    
+
     private var registerButtonSection: some View {
         CustomButtonView(viewModel: viewModel.registerButton)
     }
-    
+
     private var loginSection: some View {
         HStack {
             Text("Already have an account ?")
@@ -52,7 +52,7 @@ struct RegisterView: View {
                 .foregroundColor(.orange)
                 .onTapGesture {
                     coordinator.goBack()
-            }
+                }
         }
     }
 }

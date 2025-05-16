@@ -5,8 +5,8 @@
 //  Created by ahmad shiddiq on 30/04/25.
 //
 
-import Combine
 import Auth0
+import Combine
 import SwiftUICore
 
 class LoginViewModel: ObservableObject {
@@ -16,22 +16,22 @@ class LoginViewModel: ObservableObject {
     @Published var loginButton: CustomButtonViewModel
     @Published var description: CustomTextViewModel
     @Published var isLoginSuccess: Bool = false
-    
+
     private let loginUseCase: LoginUseCase
     private var cancellables = Set<AnyCancellable>()
-    
+
     init(loginUseCase: LoginUseCase = LoginUseCaseImpl()) {
         self.loginUseCase = loginUseCase
-        self.title = CustomTextViewModel(config: Self.makeTitleConfig())
-        self.emailField = CustomTextFieldViewModel(config: Self.makeEmailFieldConfig())
-        self.passwordField = CustomTextFieldViewModel(config: Self.makePasswordFieldConfig())
-        self.loginButton = CustomButtonViewModel(config: Self.makeLoginButtonConfig())
-        self.description = CustomTextViewModel(config: Self.makeDescConfig())
-        
+        title = CustomTextViewModel(config: Self.makeTitleConfig())
+        emailField = CustomTextFieldViewModel(config: Self.makeEmailFieldConfig())
+        passwordField = CustomTextFieldViewModel(config: Self.makePasswordFieldConfig())
+        loginButton = CustomButtonViewModel(config: Self.makeLoginButtonConfig())
+        description = CustomTextViewModel(config: Self.makeDescConfig())
+
         setupBindings()
         setupButtonAction()
     }
-    
+
     private func setupBindings() {
         Publishers.CombineLatest(emailField.$text, passwordField.$text)
             .sink { [weak self] _, _ in
@@ -40,19 +40,19 @@ class LoginViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
-    
+
     private func setupButtonAction() {
         loginButton.config.action = { [weak self] in
             self?.login()
         }
     }
-    
+
     private func updateLoginButtonState() {
         let isFormValid = emailField.isValid && passwordField.isValid
         loginButton.config.isDisabled = !isFormValid
         objectWillChange.send()
     }
-    
+
     private static func makeTitleConfig() -> CustomTextConfiguration {
         CustomTextConfiguration(
             title: "NEWS APP",
@@ -61,7 +61,7 @@ class LoginViewModel: ObservableObject {
             isBold: true
         )
     }
-    
+
     private static func makeEmailFieldConfig() -> CustomTextFieldConfiguration {
         CustomTextFieldConfiguration(
             title: "Email",
@@ -70,7 +70,7 @@ class LoginViewModel: ObservableObject {
             validationType: .email
         )
     }
-    
+
     private static func makePasswordFieldConfig() -> CustomTextFieldConfiguration {
         CustomTextFieldConfiguration(
             title: "Password",
@@ -79,7 +79,7 @@ class LoginViewModel: ObservableObject {
             validationType: .password
         )
     }
-    
+
     private static func makeLoginButtonConfig() -> CustomButtonConfiguration {
         CustomButtonConfiguration(
             title: "Login",
@@ -89,7 +89,7 @@ class LoginViewModel: ObservableObject {
             action: {}
         )
     }
-    
+
     private static func makeDescConfig() -> CustomTextConfiguration {
         CustomTextConfiguration(
             title: "Don't have an account?",
@@ -98,7 +98,7 @@ class LoginViewModel: ObservableObject {
             isBold: false
         )
     }
-    
+
     func login() {
         loginButton.config.isLoading = true
         loginUseCase.login(

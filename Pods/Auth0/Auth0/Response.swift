@@ -17,14 +17,14 @@ struct Response<E: Auth0APIError> {
 
     func result() throws -> Any? {
         guard error == nil else { throw E(cause: error!, statusCode: response?.statusCode ?? 0) }
-        guard let response = self.response else { throw E(description: nil) }
-        guard (200...300).contains(response.statusCode) else {
+        guard let response = response else { throw E(description: nil) }
+        guard (200 ... 300).contains(response.statusCode) else {
             if let json = json(data) as? [String: Any] {
                 throw E(info: json, statusCode: response.statusCode)
             }
             throw E(from: self)
         }
-        guard let data = self.data, !data.isEmpty else {
+        guard let data = data, !data.isEmpty else {
             if response.statusCode == 204 {
                 return nil
             }

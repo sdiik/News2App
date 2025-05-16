@@ -8,7 +8,7 @@
 class RegisterRepositoryImpl: RegisterRepository {
     let authRepositoryProtocol: AuthServiceProtocol
     private let storage: CredentialsStorage
-    
+
     init(
         authRepositoryProtocol: AuthServiceProtocol = AuthService(),
         storage: CredentialsStorage = CredentialsStorage()
@@ -16,14 +16,14 @@ class RegisterRepositoryImpl: RegisterRepository {
         self.authRepositoryProtocol = authRepositoryProtocol
         self.storage = storage
     }
-    
+
     func register(email: String, password: String, result: @escaping registerResult) {
         authRepositoryProtocol.register(email: email, password: password) { networkResult in
             switch networkResult {
-            case .success(let data):
+            case let .success(data):
                 self.storage.save(data)
                 result(.success(data))
-            case .failure(let error):
+            case let .failure(error):
                 result(.failure(error))
             }
         }

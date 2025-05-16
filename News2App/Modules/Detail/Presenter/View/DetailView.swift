@@ -10,7 +10,7 @@ import SwiftUI
 struct DetailView: View {
     @ObservedObject var viewModel: DetailViewModel
     @EnvironmentObject var loadingManager: LoadingManager
-    
+
     var body: some View {
         BasicView {
             GeometryReader { _ in
@@ -33,21 +33,21 @@ struct DetailView: View {
     private var headerSection: some View {
         HStack {
             CustomImageView(viewModel: viewModel.logo)
-            VStack(alignment:.leading, spacing: 8){
+            VStack(alignment: .leading, spacing: 8) {
                 CustomTextView(viewModel: viewModel.title)
                 CustomTextView(viewModel: viewModel.newsSite)
             }.padding(.leading, 8)
             Spacer()
         }
     }
-    
+
     private var contentSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             CustomTextView(viewModel: viewModel.date)
             CustomTextView(viewModel: viewModel.desc)
         }
     }
-    
+
     private var webSection: some View {
         Group {
             if let url = viewModel.getNewsUrl() {

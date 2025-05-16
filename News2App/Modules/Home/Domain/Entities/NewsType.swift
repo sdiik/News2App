@@ -22,7 +22,7 @@ enum NewsType: Int, CaseIterable {
             return NewsAPIService().makeReportsURL()
         }
     }
-    
+
     func url(with query: String) -> URL? {
         switch self {
         case .article:
@@ -33,7 +33,7 @@ enum NewsType: Int, CaseIterable {
             return NewsAPIService().makeReportsURL(withQuery: query)
         }
     }
-    
+
     var title: String {
         switch self {
         case .article:

@@ -46,7 +46,8 @@ final class MultipartUpload: @unchecked Sendable { // Must be @unchecked due to 
 
     init(encodingMemoryThreshold: UInt64,
          request: any URLRequestConvertible,
-         multipartFormData: MultipartFormData) {
+         multipartFormData: MultipartFormData)
+    {
         self.encodingMemoryThreshold = encodingMemoryThreshold
         self.request = request
         fileManager = multipartFormData.fileManager

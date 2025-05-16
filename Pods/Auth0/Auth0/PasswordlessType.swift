@@ -1,8 +1,7 @@
 /// Types of passwordless authentication.
 public enum PasswordlessType: String {
-
     /// Simple OTP code sent by email or SMS.
-    case code = "code"
+    case code
 
     /// Regular Web HTTP link (web only, uses a redirect).
     case webLink = "link"
@@ -12,5 +11,4 @@ public enum PasswordlessType: String {
 
     /// Android App Link.
     case androidLink = "link_android"
-
 }

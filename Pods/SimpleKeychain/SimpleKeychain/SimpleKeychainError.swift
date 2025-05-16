@@ -55,24 +55,24 @@ public struct SimpleKeychainError: LocalizedError, CustomDebugStringConvertible 
 
     /// The `OSStatus` of the Keychain operation.
     public var status: OSStatus {
-        return self.code.rawValue
+        return code.rawValue
     }
 
     /// Description of the error.
     ///
     /// - Important: You should avoid displaying the error description to the user, it's meant for **debugging** only.
-    public var localizedDescription: String { return self.debugDescription }
+    public var localizedDescription: String { return debugDescription }
 
     /// Description of the error.
     ///
     /// - Important: You should avoid displaying the error description to the user, it's meant for **debugging** only.
-    public var errorDescription: String? { return self.debugDescription }
+    public var errorDescription: String? { return debugDescription }
 
     /// Description of the error.
     ///
     /// - Important: You should avoid displaying the error description to the user, it's meant for **debugging** only.
     public var debugDescription: String {
-        switch self.code {
+        switch code {
         case .operationNotImplemented:
             return "errSecUnimplemented: A function or operation is not implemented."
         case .invalidParameters:
@@ -92,7 +92,7 @@ public struct SimpleKeychainError: LocalizedError, CustomDebugStringConvertible 
         case .decodeFailed:
             return "errSecDecode: Unable to decode the provided data."
         case .other:
-            return "Unspecified Keychain error: \(self.status)."
+            return "Unspecified Keychain error: \(status)."
         case let .unknown(message):
             return "Unknown error: \(message)."
         }

@@ -1,5 +1,5 @@
 //
-//  CustomButtonVIew.swift
+//  CustomButtonView.swift
 //  News2App
 //
 //  Created by ahmad shiddiq on 30/04/25.
@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CustomButtonView: View {
     @ObservedObject var viewModel: CustomButtonViewModel
-    
+
     var body: some View {
         Button {
             viewModel.performAction()

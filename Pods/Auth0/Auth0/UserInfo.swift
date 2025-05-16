@@ -8,7 +8,6 @@ import Foundation
 ///
 /// - [Claims](https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-token-claims)
 public struct UserInfo: JSONObjectPayload {
-
     /// The list of public claims.
     public static let publicClaims = [
         "sub",
@@ -30,7 +29,7 @@ public struct UserInfo: JSONObjectPayload {
         "phone_number",
         "phone_number_verified",
         "address",
-        "updated_at"
+        "updated_at",
     ]
 
     // MARK: - Claims
@@ -135,13 +134,11 @@ public struct UserInfo: JSONObjectPayload {
 
     /// Any custom claims.
     public let customClaims: [String: Any]?
-
 }
 
 // MARK: - Initializer
 
 public extension UserInfo {
-
     /// Creates a new `UserInfo` from a JSON dictionary.
     init?(json: [String: Any]) {
         guard let sub = json["sub"] as? String else { return nil }
@@ -208,5 +205,4 @@ public extension UserInfo {
                   updatedAt: updatedAt,
                   customClaims: customClaims)
     }
-
 }

@@ -2,7 +2,6 @@ import Foundation
 
 /// Logger for debugging purposes.
 public protocol Logger {
-
     /// Log an HTTP request.
     func trace(request: URLRequest, session: URLSession)
 
@@ -11,7 +10,6 @@ public protocol Logger {
 
     /// Log a URL.
     func trace(url: URL, source: String?)
-
 }
 
 protocol LoggerOutput {
@@ -25,7 +23,6 @@ struct DefaultOutput: LoggerOutput {
 }
 
 struct DefaultLogger: Logger {
-
     let output: LoggerOutput
 
     init(output: LoggerOutput = DefaultOutput()) {
@@ -59,5 +56,4 @@ struct DefaultLogger: Logger {
     func trace(url: URL, source: String?) {
         output.log(message: "\(source ?? "URL"): \(url.absoluteString)")
     }
-
 }

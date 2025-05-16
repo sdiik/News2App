@@ -9,13 +9,13 @@ import SwiftUI
 
 struct LoadingView: View {
     @EnvironmentObject var loadingManager: LoadingManager
-    
+
     var body: some View {
         if loadingManager.isLoading {
             ZStack {
                 Color.black.opacity(0.5)
                     .edgesIgnoringSafeArea(.all)
-                
+
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
                     .scaleEffect(2)

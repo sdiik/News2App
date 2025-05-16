@@ -13,7 +13,6 @@ public typealias ManagementObject = [String: Any]
  - ``ManagementError``
  */
 public protocol Users: Trackable, Loggable {
-
     /// The Management API token.
     var token: String { get }
     /// The Auth0 Domain URL.
@@ -97,8 +96,8 @@ public protocol Users: Trackable, Loggable {
      ```swift
      let attributes = UserPatchAttributes()
          .email("new.email@auth0.com",
-                verify: true, 
-                connection: "Username-Password-Authentication", 
+                verify: true,
+                connection: "Username-Password-Authentication",
                 clientId: clientId)
          .userMetadata(["first_name": "John", "last_name": "Appleseed"])
          .appMetadata(["role": "admin"])
@@ -229,42 +228,38 @@ public protocol Users: Trackable, Loggable {
      - [User Account Linking](https://auth0.com/docs/manage-users/user-accounts/user-account-linking)
      */
     func unlink(identityId: String, provider: String, fromUserId identifier: String) -> Request<[ManagementObject], ManagementError>
-
 }
 
 public extension Users {
-
     func get(_ identifier: String, fields: [String] = [], include: Bool = true) -> Request<ManagementObject, ManagementError> {
-        return self.get(identifier, fields: fields, include: include)
+        return get(identifier, fields: fields, include: include)
     }
 
     func link(_ identifier: String, withUser userId: String, provider: String, connectionId: String? = nil) -> Request<[ManagementObject], ManagementError> {
-        return self.link(identifier, withUser: userId, provider: provider, connectionId: connectionId)
+        return link(identifier, withUser: userId, provider: provider, connectionId: connectionId)
     }
-
 }
 
 extension Management: Users {
-
     func get(_ identifier: String, fields: [String], include: Bool) -> Request<ManagementObject, ManagementError> {
         let userPath = "api/v2/users/\(identifier)"
-        var component = components(baseURL: self.url as URL, path: userPath)
+        var component = components(baseURL: url as URL, path: userPath)
         let value = fields.joined(separator: ",")
         if !value.isEmpty {
             component.queryItems = [
                 URLQueryItem(name: "fields", value: value),
-                URLQueryItem(name: "include_fields", value: String(include))
+                URLQueryItem(name: "include_fields", value: String(include)),
             ]
         }
 
-        return Request(session: self.session, url: component.url!, method: "GET", handle: self.managementObject, headers: self.defaultHeaders, logger: self.logger, telemetry: self.telemetry)
+        return Request(session: session, url: component.url!, method: "GET", handle: managementObject, headers: defaultHeaders, logger: logger, telemetry: telemetry)
     }
 
     func patch(_ identifier: String, attributes: UserPatchAttributes) -> Request<ManagementObject, ManagementError> {
         let userPath = "api/v2/users/\(identifier)"
-        let component = components(baseURL: self.url as URL, path: userPath)
+        let component = components(baseURL: url as URL, path: userPath)
 
-        return Request(session: self.session, url: component.url!, method: "PATCH", handle: self.managementObject, parameters: attributes.dictionary, headers: self.defaultHeaders, logger: self.logger, telemetry: self.telemetry)
+        return Request(session: session, url: component.url!, method: "PATCH", handle: managementObject, parameters: attributes.dictionary, headers: defaultHeaders, logger: logger, telemetry: telemetry)
     }
 
     func patch(_ identifier: String, userMetadata: [String: Any]) -> Request<ManagementObject, ManagementError> {
@@ -279,7 +274,7 @@ extension Management: Users {
     func link(_ identifier: String, withUser userId: String, provider: String, connectionId: String? = nil) -> Request<[ManagementObject], ManagementError> {
         var payload = [
             "user_id": userId,
-            "provider": provider
+            "provider": provider,
         ]
         payload["connection_id"] = connectionId
         return link(identifier, parameters: payload)
@@ -288,13 +283,13 @@ extension Management: Users {
     private func link(_ identifier: String, parameters: [String: Any]) -> Request<[ManagementObject], ManagementError> {
         let identitiesPath = "api/v2/users/\(identifier)/identities"
         let url = components(baseURL: self.url as URL, path: identitiesPath).url!
-        return Request(session: self.session, url: url, method: "POST", handle: self.managementObjects, parameters: parameters, headers: self.defaultHeaders, logger: self.logger, telemetry: self.telemetry)
+        return Request(session: session, url: url, method: "POST", handle: managementObjects, parameters: parameters, headers: defaultHeaders, logger: logger, telemetry: telemetry)
     }
 
     func unlink(identityId: String, provider: String, fromUserId identifier: String) -> Request<[ManagementObject], ManagementError> {
         let identityPath = "api/v2/users/\(identifier)/identities/\(provider)/\(identityId)"
         let url = components(baseURL: self.url as URL, path: identityPath).url!
-        return Request(session: self.session, url: url, method: "DELETE", handle: self.managementObjects, headers: self.defaultHeaders, logger: self.logger, telemetry: self.telemetry)
+        return Request(session: session, url: url, method: "DELETE", handle: managementObjects, headers: defaultHeaders, logger: logger, telemetry: telemetry)
     }
 }
 

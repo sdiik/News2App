@@ -10,7 +10,7 @@ import SwiftUI
 struct LoginView: View {
     @ObservedObject var viewModel: LoginViewModel
     @EnvironmentObject var coordinator: AppCoordinator
-    
+
     var body: some View {
         VStack(spacing: 24) {
             headerSection
@@ -28,7 +28,7 @@ struct LoginView: View {
         }
         .navigationBarHidden(true)
     }
-    
+
     private var headerSection: some View {
         VStack {
             Image("icon_news")
@@ -38,18 +38,18 @@ struct LoginView: View {
             CustomTextView(viewModel: viewModel.title)
         }
     }
-    
+
     private var formSection: some View {
         VStack(spacing: 8) {
             CustomTextField(viewModel: viewModel.emailField)
             CustomTextField(viewModel: viewModel.passwordField)
         }
     }
-    
+
     private var loginButtonSection: some View {
         CustomButtonView(viewModel: viewModel.loginButton)
     }
-    
+
     private var registerSection: some View {
         HStack {
             CustomTextView(viewModel: viewModel.description)

@@ -261,7 +261,8 @@ public class Request: @unchecked Sendable {
          serializationQueue: DispatchQueue,
          eventMonitor: (any EventMonitor)?,
          interceptor: (any RequestInterceptor)?,
-         delegate: any RequestDelegate) {
+         delegate: any RequestDelegate)
+    {
         self.id = id
         self.underlyingQueue = underlyingQueue
         self.serializationQueue = serializationQueue
@@ -655,7 +656,7 @@ public class Request: @unchecked Sendable {
     ///   - session: `URLSession` which creates the `URLSessionTask`.
     ///
     /// - Returns:   The `URLSessionTask` created.
-    func task(for request: URLRequest, using session: URLSession) -> URLSessionTask {
+    func task(for _: URLRequest, using _: URLSession) -> URLSessionTask {
         fatalError("Subclasses must override.")
     }
 
@@ -950,9 +951,9 @@ public class Request: @unchecked Sendable {
     }
 }
 
-extension Request {
+public extension Request {
     /// Type indicating how a `DataRequest` or `DataStreamRequest` should proceed after receiving an `HTTPURLResponse`.
-    public enum ResponseDisposition: Sendable {
+    enum ResponseDisposition: Sendable {
         /// Allow the request to continue normally.
         case allow
         /// Cancel the request, similar to calling `cancel()`.
@@ -970,7 +971,7 @@ extension Request {
 // MARK: - Protocol Conformances
 
 extension Request: Equatable {
-    public static func ==(lhs: Request, rhs: Request) -> Bool {
+    public static func == (lhs: Request, rhs: Request) -> Bool {
         lhs.id == rhs.id
     }
 }
@@ -995,11 +996,11 @@ extension Request: CustomStringConvertible {
     }
 }
 
-extension Request {
+public extension Request {
     /// cURL representation of the instance.
     ///
     /// - Returns: The cURL equivalent of the instance.
-    public func cURLDescription() -> String {
+    func cURLDescription() -> String {
         guard
             let request = lastRequest,
             let url = request.url,
@@ -1032,7 +1033,8 @@ extension Request {
         if let configuration = delegate?.sessionConfiguration, configuration.httpShouldSetCookies {
             if
                 let cookieStorage = configuration.httpCookieStorage,
-                let cookies = cookieStorage.cookies(for: url), !cookies.isEmpty {
+                let cookies = cookieStorage.cookies(for: url), !cookies.isEmpty
+            {
                 let allCookies = cookies.map { "\($0.name)=\($0.value)" }.joined(separator: ";")
 
                 components.append("-b \"\(allCookies)\"")

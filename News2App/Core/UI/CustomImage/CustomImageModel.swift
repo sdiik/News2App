@@ -5,8 +5,8 @@
 //  Created by ahmad shiddiq on 02/05/25.
 //
 
-import SwiftUI
 import Foundation
+import SwiftUI
 
 struct CustomImageModel {
     var imagePhase: AsyncImagePhase = .empty

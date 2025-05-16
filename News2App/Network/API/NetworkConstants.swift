@@ -7,12 +7,11 @@
 
 enum NetworkConstants {
     static let baseURL = "https://api.spaceflightnewsapi.net/v4"
-    
+
     enum Endpoints {
         static let articles = "/articles"
         static let blogs = "/blogs"
         static let reports = "/reports"
         static let info = "/info"
-        
     }
 }

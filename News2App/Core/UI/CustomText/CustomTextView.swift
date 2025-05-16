@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CustomTextView: View {
     @ObservedObject var viewModel: CustomTextViewModel
-    
+
     var body: some View {
         Text(viewModel.config.title)
             .font(viewModel.getFontStyle())

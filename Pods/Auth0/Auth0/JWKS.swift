@@ -6,19 +6,15 @@ import Foundation
 ///
 /// - [JSON Web Key Sets](https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-key-sets)
 public struct JWKS: Codable {
-
     /// The keys in the key set.
     public let keys: [JWK]
-
 }
 
 public extension JWKS {
-
     /// Gets a key from the key set by its identifier (`kid`).
     func key(id kid: String) -> JWK? {
         return keys.first { $0.keyId == kid }
     }
-
 }
 
 /// Cryptographic public key of your Auth0 tenant.
@@ -27,7 +23,6 @@ public extension JWKS {
 ///
 /// - ``JWKS``
 public struct JWK: Codable {
-
     /// The type of key.
     public let keyType: String
 
@@ -66,5 +61,4 @@ public struct JWK: Codable {
         case modulus = "n"
         case exponent = "e"
     }
-
 }

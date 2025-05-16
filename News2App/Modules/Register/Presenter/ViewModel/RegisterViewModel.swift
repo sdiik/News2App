@@ -13,21 +13,20 @@ class RegisterViewModel: ObservableObject {
     @Published var emailField: CustomTextFieldViewModel
     @Published var passwordField: CustomTextFieldViewModel
     @Published var registerButton: CustomButtonViewModel
-    
+
     private let registerUseCase: RegisterUseCase
     private var cancellables = Set<AnyCancellable>()
-    
+
     init(registerUseCase: RegisterUseCase = RegisterUseCaseImpl()) {
         self.registerUseCase = registerUseCase
         emailField = CustomTextFieldViewModel(config: Self.makeEmailFieldConfig())
         passwordField = CustomTextFieldViewModel(config: Self.makePasswordFieldConfig())
         registerButton = CustomButtonViewModel(config: Self.makeRegisterButtonConfig())
-        
+
         setupBindings()
         setupRegisterButtonAction()
-        
     }
-    
+
     private func setupBindings() {
         Publishers.CombineLatest(emailField.$text, passwordField.$text)
             .sink { [weak self] _, _ in
@@ -36,19 +35,19 @@ class RegisterViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
-    
+
     private func setupRegisterButtonAction() {
         registerButton.config.action = { [weak self] in
             self?.register()
         }
     }
-    
+
     private func updateRegisterButtonState() {
         let isFormValid = emailField.isValid && passwordField.isValid
         registerButton.config.isDisabled = !isFormValid
         objectWillChange.send()
     }
-    
+
     private static func makeEmailFieldConfig() -> CustomTextFieldConfiguration {
         return CustomTextFieldConfiguration(
             title: "Email",
@@ -57,7 +56,7 @@ class RegisterViewModel: ObservableObject {
             validationType: .email
         )
     }
-    
+
     private static func makePasswordFieldConfig() -> CustomTextFieldConfiguration {
         return CustomTextFieldConfiguration(
             title: "Password",
@@ -66,7 +65,7 @@ class RegisterViewModel: ObservableObject {
             validationType: .password
         )
     }
-    
+
     private static func makeRegisterButtonConfig() -> CustomButtonConfiguration {
         return CustomButtonConfiguration(
             title: "Register",
@@ -76,7 +75,7 @@ class RegisterViewModel: ObservableObject {
             action: {}
         )
     }
-    
+
     func register() {
         registerButton.config.isLoading = true
         registerUseCase.register(

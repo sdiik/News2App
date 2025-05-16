@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CustomTextField: View {
     @ObservedObject var viewModel: CustomTextFieldViewModel
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(viewModel.config.title)
@@ -28,7 +28,7 @@ struct CustomTextField: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(viewModel.errorMessage != nil ? Color.red : Color.gray.opacity(0.4), lineWidth: 1)
             )
-            
+
             if let errorMessage = viewModel.errorMessage {
                 Text(errorMessage)
                     .font(.caption)

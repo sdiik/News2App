@@ -12,7 +12,7 @@ struct News2AppApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var appCoordinator = AppCoordinator()
     @StateObject var loadingManager = LoadingManager()
-    
+
     var body: some Scene {
         WindowGroup {
             AppCoordinatorView()

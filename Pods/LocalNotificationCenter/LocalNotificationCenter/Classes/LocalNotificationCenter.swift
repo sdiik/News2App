@@ -27,19 +27,17 @@ import UserNotifications
 
 /// An object for managing the local notifications for your app or app extension within a given namespace.
 public class LocalNotificationCenter {
-    
     /// The default notification center instance.
     public static let `default` = LocalNotificationCenter(context: "com.localnotificationcenter.context.default")
-    
+
     /// The context.
     public let context: String
-    
+
     /// A list of all notification requests (managed by the receiver) that are scheduled and waiting to be delivered.
-    public private(set) var pendingNotificationRequestsByIdentifier: [String : UNNotificationRequest] = [:]
-    
-    
+    public private(set) var pendingNotificationRequestsByIdentifier: [String: UNNotificationRequest] = [:]
+
     // MARK: - Lifecycle
-    
+
     /// Creates and returns a new instance of the local notification center.
     ///
     /// - Parameters:
@@ -48,7 +46,7 @@ public class LocalNotificationCenter {
         self.context = context
         loadScheduledLocalNotifications()
     }
-    
+
     /// Schedules a local notification associated with the receivers context using the given parameters.
     ///
     /// - Parameters:
@@ -61,37 +59,38 @@ public class LocalNotificationCenter {
                                           body: String,
                                           dateMatching dateComponents: DateComponents,
                                           repeats: Bool,
-                                          userInfo: [AnyHashable : Any]? = nil) {
+                                          userInfo: [AnyHashable: Any]? = nil)
+    {
         guard !isLocalNotificationScheduled(forIdentifier: identifier) else {
             return
         }
-        
-        var mergedUserInfo: [AnyHashable : Any] = [
-            LocalNotificationCenter.UserInfoKeys.notificationContext : self.context,
-            LocalNotificationCenter.UserInfoKeys.notificationIdentifier : identifier
+
+        var mergedUserInfo: [AnyHashable: Any] = [
+            LocalNotificationCenter.UserInfoKeys.notificationContext: context,
+            LocalNotificationCenter.UserInfoKeys.notificationIdentifier: identifier,
         ]
-        
-        mergedUserInfo.merge(userInfo ?? [:]) {  (current, _) in return current }
-        
+
+        mergedUserInfo.merge(userInfo ?? [:]) { current, _ in current }
+
         let content = UNMutableNotificationContent()
         content.body = body
         content.userInfo = mergedUserInfo
-        
+
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: repeats)
-        
+
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-        
-        UNUserNotificationCenter.current().add(request) { [weak self] (error) in
+
+        UNUserNotificationCenter.current().add(request) { [weak self] error in
             guard let strongSelf = self else {
                 return
             }
-            
+
             if error == nil {
                 strongSelf.pendingNotificationRequestsByIdentifier[identifier] = request
             }
         }
     }
-    
+
     /// Returns a Boolean that indicates if there is a local notification scheduled in the receivers context for the given identifier.
     ///
     /// - Parameters:
@@ -99,7 +98,7 @@ public class LocalNotificationCenter {
     public func isLocalNotificationScheduled(forIdentifier identifier: String) -> Bool {
         return pendingNotificationRequestsByIdentifier[identifier] != nil
     }
-    
+
     /// Cancels the local notification associated with the given identifer in the receivers context.
     ///
     /// - Parameters:
@@ -112,7 +111,7 @@ public class LocalNotificationCenter {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
         pendingNotificationRequestsByIdentifier[identifier] = nil
     }
-    
+
     /// Cancels all scheduled local notifications associated with the receivers context.
     public func cancelAllScheduledLocalNotifications() {
         let identifiers = Array(pendingNotificationRequestsByIdentifier.keys)
@@ -122,27 +121,27 @@ public class LocalNotificationCenter {
 }
 
 extension LocalNotificationCenter {
-    private struct UserInfoKeys {
+    private enum UserInfoKeys {
         static let notificationContext = "com.localnotificationcenter.userinfokeys.context"
         static let notificationIdentifier = "com.localnotificationcenter.userinfokeys.identifier"
     }
-    
+
     private func loadScheduledLocalNotifications() {
         UNUserNotificationCenter.current()
             .getPendingNotificationRequests { [weak self] requests in
                 guard let strongSelf = self else {
                     return
                 }
-                
+
                 for request in requests {
                     guard let context = request.content.userInfo[UserInfoKeys.notificationContext] as? String, context == strongSelf.context else {
                         continue
                     }
-                    
+
                     guard let identifier = request.content.userInfo[UserInfoKeys.notificationIdentifier] as? String else {
                         continue
                     }
-                    
+
                     strongSelf.pendingNotificationRequestsByIdentifier[identifier] = request
                 }
             }

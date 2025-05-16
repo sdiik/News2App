@@ -15,7 +15,7 @@ protocol AuthServiceProtocol {
 class AuthService: AuthServiceProtocol {
     private let clientID = Auth0Config.shared.clientID
     private let domain = Auth0Config.shared.domain
-    
+
     func login(email: String, password: String, completion: @escaping (Result<Credentials, Error>) -> Void) {
         Auth0
             .authentication(clientId: clientID, domain: domain)
@@ -27,14 +27,14 @@ class AuthService: AuthServiceProtocol {
             )
             .start { result in
                 switch result {
-                case .success(let credentials):
+                case let .success(credentials):
                     completion(.success(credentials))
-                case .failure(let error):
+                case let .failure(error):
                     completion(.failure(error))
                 }
             }
     }
-    
+
     func register(email: String, password: String, completion: @escaping (Result<Credentials, Error>) -> Void) {
         Auth0
             .authentication(clientId: clientID, domain: domain)
@@ -47,7 +47,7 @@ class AuthService: AuthServiceProtocol {
                 switch result {
                 case .success:
                     self.login(email: email, password: password, completion: completion)
-                case .failure(let error):
+                case let .failure(error):
                     completion(.failure(error))
                 }
             }

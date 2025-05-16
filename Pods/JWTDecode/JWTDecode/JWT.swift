@@ -8,7 +8,6 @@ import Foundation
 /// - [Validate JSON Web Tokens](https://auth0.com/docs/secure/tokens/json-web-tokens/validate-json-web-tokens)
 /// - [Validate ID Tokens](https://auth0.com/docs/secure/tokens/id-tokens/validate-id-tokens)
 public protocol JWT {
-
     /// Contents of the header part.
     var header: [String: Any] { get }
 
@@ -45,11 +44,9 @@ public protocol JWT {
     /// Checks if the JWT is currently expired using the `exp` claim. If the claim is not present the JWT will be
     /// deemed unexpired.
     var expired: Bool { get }
-
 }
 
 public extension JWT {
-
     /// Returns a claim by its name.
     ///
     /// ```swift
@@ -61,7 +58,7 @@ public extension JWT {
     /// - Parameter name: Name of the claim in the JWT.
     /// - Returns: A ``Claim`` instance.
     func claim(name: String) -> Claim {
-        let value = self.body[name]
+        let value = body[name]
         return Claim(value: value)
     }
 
@@ -78,5 +75,4 @@ public extension JWT {
     subscript(claim: String) -> Claim {
         return self.claim(name: claim)
     }
-
 }

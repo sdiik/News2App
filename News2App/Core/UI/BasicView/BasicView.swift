@@ -9,13 +9,13 @@ import SwiftUI
 
 struct BasicView<Content: View>: View {
     @EnvironmentObject var loadingManager: LoadingManager
-    
-    var content:  Content
-    
+
+    var content: Content
+
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
-    
+
     var body: some View {
         ZStack {
             content

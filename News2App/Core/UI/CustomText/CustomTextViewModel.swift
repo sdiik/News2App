@@ -10,11 +10,11 @@ import SwiftUI
 
 class CustomTextViewModel: ObservableObject {
     @Published var config: CustomTextConfiguration
-    
+
     init(config: CustomTextConfiguration) {
         self.config = config
     }
-    
+
     func getFontStyle() -> Font {
         var fontSize: CGFloat = 8
         switch config.textType {

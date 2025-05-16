@@ -21,7 +21,6 @@ public func decode(jwt: String) throws -> JWT {
 }
 
 struct DecodedJWT: JWT {
-
     let header: [String: Any]
     let body: [String: Any]
     let signature: String?
@@ -33,10 +32,10 @@ struct DecodedJWT: JWT {
             throw JWTDecodeError.invalidPartCount(jwt, parts.count)
         }
 
-        self.header = try decodeJWTPart(parts[0])
-        self.body = try decodeJWTPart(parts[1])
-        self.signature = parts[2]
-        self.string = jwt
+        header = try decodeJWTPart(parts[0])
+        body = try decodeJWTPart(parts[1])
+        signature = parts[2]
+        string = jwt
     }
 
     var expiresAt: Date? { return claim(name: "exp").date }
@@ -48,7 +47,7 @@ struct DecodedJWT: JWT {
     var identifier: String? { return claim(name: "jti").string }
 
     var expired: Bool {
-        guard let date = self.expiresAt else {
+        guard let date = expiresAt else {
             return false
         }
         return date.compare(Date()) != ComparisonResult.orderedDescending
@@ -57,21 +56,20 @@ struct DecodedJWT: JWT {
 
 /// A JWT claim.
 public struct Claim {
-
     /// Raw claim value.
     let value: Any?
 
     /// Original claim value.
     public var rawValue: Any? {
-        return self.value
+        return value
     }
 
     /// Value of the claim as `String`.
     public var string: String? {
-        return self.value as? String
+        return value as? String
     }
 
-     /// Value of the claim as `Bool`.
+    /// Value of the claim as `Bool`.
     public var boolean: Bool? {
         // This is necessary because Core Foundation's JSON deserialization turns JSON booleans into CFBoolean values,
         // which get wrapped in NSNumber –a Foundation type. But integers and floats also get wrapped in NSNumber, and
@@ -80,7 +78,7 @@ public struct Claim {
         // So, to find out if the deserialized claim value is really a CFBoolean or not, we need to bypass its NSNumber
         // wrapper and check its Core Foundation type directly. We do so by comparing its Core Foundation type ID to
         // that of CFBoolean.
-        if let value = self.value as CFTypeRef?, CFGetTypeID(value) == CFBooleanGetTypeID() {
+        if let value = value as CFTypeRef?, CFGetTypeID(value) == CFBooleanGetTypeID() {
             return self.value as? Bool
         }
         return nil
@@ -89,10 +87,10 @@ public struct Claim {
     /// Value of the claim as `Double`.
     public var double: Double? {
         var double: Double?
-        if let string = self.string {
+        if let string = string {
             double = Double(string)
-        } else if self.boolean == nil {
-            double = self.value as? Double
+        } else if boolean == nil {
+            double = value as? Double
         }
         return double
     }
@@ -100,33 +98,32 @@ public struct Claim {
     /// Value of the claim as `Int`.
     public var integer: Int? {
         var integer: Int?
-        if let string = self.string {
+        if let string = string {
             integer = Int(string)
-        } else if let double = self.double {
+        } else if let double = double {
             integer = Int(double)
-        } else if self.boolean == nil {
-            integer = self.value as? Int
+        } else if boolean == nil {
+            integer = value as? Int
         }
         return integer
     }
 
     /// Value of the claim as `Date`.
     public var date: Date? {
-        guard let timestamp: TimeInterval = self.double else { return nil }
+        guard let timestamp: TimeInterval = double else { return nil }
         return Date(timeIntervalSince1970: timestamp)
     }
 
     /// Value of the claim as `[String]`.
     public var array: [String]? {
-        if let array = self.value as? [String] {
+        if let array = value as? [String] {
             return array
         }
-        if let value = self.string {
+        if let value = string {
             return [value]
         }
         return nil
     }
-
 }
 
 private func base64UrlDecode(_ value: String) -> Data? {
@@ -149,7 +146,8 @@ private func decodeJWTPart(_ value: String) throws -> [String: Any] {
     }
 
     guard let json = try? JSONSerialization.jsonObject(with: bodyData, options: []),
-          let payload = json as? [String: Any] else {
+          let payload = json as? [String: Any]
+    else {
         throw JWTDecodeError.invalidJSON(value)
     }
 

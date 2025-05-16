@@ -1,13 +1,13 @@
 // swiftlint:disable file_length
 
 import Foundation
-import SimpleKeychain
 import JWTDecode
+import SimpleKeychain
 #if WEB_AUTH_PLATFORM
-import LocalAuthentication
+    import LocalAuthentication
 #endif
 #if canImport(Combine)
-import Combine
+    import Combine
 #endif
 
 /// Credentials management utility for securely storing and retrieving the user's credentials from the Keychain.
@@ -20,14 +20,13 @@ import Combine
 ///
 /// - ``CredentialsManagerError``
 public struct CredentialsManager {
-
     private let storage: CredentialsStorage
     private let storeKey: String
     private let authentication: Authentication
     private let dispatchQueue = DispatchQueue(label: "com.auth0.credentialsmanager.serial")
     private let dispatchGroup = DispatchGroup()
     #if WEB_AUTH_PLATFORM
-    var bioAuth: BioAuthentication?
+        var bioAuth: BioAuthentication?
     #endif
 
     /// Creates a new `CredentialsManager` instance.
@@ -60,31 +59,31 @@ public struct CredentialsManager {
     }
 
     #if WEB_AUTH_PLATFORM
-    /// Enables biometric authentication for additional security during credentials retrieval.
-    ///
-    /// ## Usage
-    ///
-    /// ```swift
-    /// credentialsManager.enableBiometrics(withTitle: "Touch to Login")
-    /// ```
-    ///
-    /// If needed, you can specify a particular `LAPolicy` to be used. For example, you might want to support Face ID or
-    /// Touch ID, but also allow fallback to passcode.
-    ///
-    /// ```swift
-    /// credentialsManager.enableBiometrics(withTitle: "Touch or enter passcode to Login", 
-    ///                                     evaluationPolicy: .deviceOwnerAuthentication)
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - title:            Main message to display when Face ID or Touch ID is used.
-    ///   - cancelTitle:      Cancel message to display when Face ID or Touch ID is used.
-    ///   - fallbackTitle:    Fallback message to display when Face ID or Touch ID is used after a failed match.
-    ///   - evaluationPolicy: Policy to be used for authentication policy evaluation.
-    /// - Important: Access to the ``user`` property will not be protected by biometric authentication.
-    public mutating func enableBiometrics(withTitle title: String, cancelTitle: String? = nil, fallbackTitle: String? = nil, evaluationPolicy: LAPolicy = LAPolicy.deviceOwnerAuthenticationWithBiometrics) {
-        self.bioAuth = BioAuthentication(authContext: LAContext(), evaluationPolicy: evaluationPolicy, title: title, cancelTitle: cancelTitle, fallbackTitle: fallbackTitle)
-    }
+        /// Enables biometric authentication for additional security during credentials retrieval.
+        ///
+        /// ## Usage
+        ///
+        /// ```swift
+        /// credentialsManager.enableBiometrics(withTitle: "Touch to Login")
+        /// ```
+        ///
+        /// If needed, you can specify a particular `LAPolicy` to be used. For example, you might want to support Face ID or
+        /// Touch ID, but also allow fallback to passcode.
+        ///
+        /// ```swift
+        /// credentialsManager.enableBiometrics(withTitle: "Touch or enter passcode to Login",
+        ///                                     evaluationPolicy: .deviceOwnerAuthentication)
+        /// ```
+        ///
+        /// - Parameters:
+        ///   - title:            Main message to display when Face ID or Touch ID is used.
+        ///   - cancelTitle:      Cancel message to display when Face ID or Touch ID is used.
+        ///   - fallbackTitle:    Fallback message to display when Face ID or Touch ID is used after a failed match.
+        ///   - evaluationPolicy: Policy to be used for authentication policy evaluation.
+        /// - Important: Access to the ``user`` property will not be protected by biometric authentication.
+        public mutating func enableBiometrics(withTitle title: String, cancelTitle: String? = nil, fallbackTitle: String? = nil, evaluationPolicy: LAPolicy = LAPolicy.deviceOwnerAuthenticationWithBiometrics) {
+            bioAuth = BioAuthentication(authContext: LAContext(), evaluationPolicy: evaluationPolicy, title: title, cancelTitle: cancelTitle, fallbackTitle: fallbackTitle)
+        }
     #endif
 
     /// Stores a credentials instance in the Keychain.
@@ -102,7 +101,7 @@ public struct CredentialsManager {
             return false
         }
 
-        return self.storage.setEntry(data, forKey: storeKey)
+        return storage.setEntry(data, forKey: storeKey)
     }
 
     /// Clears credentials stored in the Keychain.
@@ -115,7 +114,7 @@ public struct CredentialsManager {
     ///
     /// - Returns: If the credentials were removed.
     public func clear() -> Bool {
-        return self.storage.deleteEntry(forKey: storeKey)
+        return storage.deleteEntry(forKey: storeKey)
     }
 
     /// Calls the `/oauth/revoke` endpoint to revoke the refresh token and then clears the credentials if the request
@@ -123,7 +122,7 @@ public struct CredentialsManager {
     /// result containing a ``CredentialsManagerError/revokeFailed`` error.
     ///
     /// ## Usage
-    /// 
+    ///
     /// ```swift
     /// credentialsManager.revoke { result in
     ///     switch result {
@@ -153,19 +152,20 @@ public struct CredentialsManager {
     /// - [Refresh Tokens](https://auth0.com/docs/secure/tokens/refresh-tokens)
     /// - [Authentication API Endpoint](https://auth0.com/docs/api/authentication#revoke-refresh-token)
     public func revoke(headers: [String: String] = [:], _ callback: @escaping (CredentialsManagerResult<Void>) -> Void) {
-        guard let data = self.storage.getEntry(forKey: self.storeKey),
+        guard let data = storage.getEntry(forKey: storeKey),
               let credentials = try? NSKeyedUnarchiver.unarchivedObject(ofClass: Credentials.self, from: data),
-              let refreshToken = credentials.refreshToken else {
-                  _ = self.clear()
-                  return callback(.success(()))
+              let refreshToken = credentials.refreshToken
+        else {
+            _ = clear()
+            return callback(.success(()))
         }
 
-        self.authentication
+        authentication
             .revoke(refreshToken: refreshToken)
             .headers(headers)
             .start { result in
                 switch result {
-                case .failure(let error):
+                case let .failure(error):
                     callback(.failure(CredentialsManagerError(code: .revokeFailed, cause: error)))
                 case .success:
                     _ = self.clear()
@@ -194,8 +194,8 @@ public struct CredentialsManager {
     ///
     /// - ``Credentials/expiresIn``
     public func hasValid(minTTL: Int = 0) -> Bool {
-        guard let credentials = self.retrieveCredentials() else { return false }
-        return !self.hasExpired(credentials) && !self.willExpire(credentials, within: minTTL)
+        guard let credentials = retrieveCredentials() else { return false }
+        return !hasExpired(credentials) && !willExpire(credentials, within: minTTL)
     }
 
     /// Checks that there are credentials stored, and that the credentials contain a refresh token. If you are using
@@ -213,100 +213,100 @@ public struct CredentialsManager {
     ///
     /// - Returns: If there are credentials stored containing a refresh token.
     public func canRenew() -> Bool {
-        guard let credentials = self.retrieveCredentials() else { return false }
+        guard let credentials = retrieveCredentials() else { return false }
         return credentials.refreshToken != nil
     }
 
     #if WEB_AUTH_PLATFORM
-    /// Retrieves credentials from the Keychain and yields new credentials using the refresh token if the access token
-    /// is expired. Otherwise, the retrieved credentials will be returned via the success case as they are not expired.
-    /// Renewed credentials will be stored in the Keychain. **This method is thread-safe**.
-    ///
-    /// ## Usage
-    ///
-    /// ```swift
-    /// credentialsManager.credentials { result in
-    ///     switch result {
-    ///     case .success(let credentials):
-    ///         print("Obtained credentials: \(credentials)")
-    ///     case .failure(let error):
-    ///         print("Failed with: \(error)")
-    ///     }
-    /// }
-    /// ```
-    ///
-    /// To avoid retrieving access tokens with too little time left, you can enforce a minimum TTL:
-    ///
-    /// ```swift
-    /// credentialsManager.credentials(minTTL: 60) { print($0) }
-    /// ```
-    ///
-    /// If you need to specify custom parameters or headers for the credentials renewal:
-    ///
-    /// ```swift
-    /// credentialsManager.credentials(parameters: ["key": "value"],
-    ///                                headers: ["key": "value"]) { print($0) }
-    /// ```
-    ///
-    /// When renewing credentials you can get a downscoped access token by requesting fewer scopes than were requested
-    /// on login. If you specify fewer scopes, the credentials will be renewed immediately, regardless of whether they
-    /// are expired or not.
-    ///
-    /// ```swift
-    /// credentialsManager.credentials(scope: "openid offline_access") { print($0) }
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - scope:      Space-separated list of scope values to request when renewing credentials. Defaults to `nil`, which will ask for the same scopes that were requested on login.
-    ///   - minTTL:     Minimum time in seconds the access token must remain valid to avoid being renewed. Defaults to `0`.
-    ///   - parameters: Additional parameters to use when renewing credentials.
-    ///   - headers:    Additional headers to use when renewing credentials.
-    ///   - callback:   Callback that receives a `Result` containing either the user's credentials or an error.
-    /// - Requires: The scope `offline_access` to have been requested on login to get a refresh token from Auth0. If
-    /// the credentials are expired and there is no refresh token, the subscription will complete with a ``CredentialsManagerError/noRefreshToken`` error.
-    /// - Warning: Do not call `store(credentials:)` afterward. The Credentials Manager automatically persists the
-    /// renewed credentials. Since this method is thread-safe and ``store(credentials:)`` is not, calling it anyway can
-    /// cause concurrency issues.
-    /// - Important: To ensure that no concurrent renewal requests get made, do not call this method from multiple
-    /// Credentials Manager instances. The Credentials Manager cannot synchronize requests across instances.
-    ///
-    /// ## See Also
-    ///
-    /// - [Refresh Tokens](https://auth0.com/docs/secure/tokens/refresh-tokens)
-    /// - [Authentication API Endpoint](https://auth0.com/docs/api/authentication#refresh-token)
-    public func credentials(withScope scope: String? = nil, minTTL: Int = 0, parameters: [String: Any] = [:], headers: [String: String] = [:], callback: @escaping (CredentialsManagerResult<Credentials>) -> Void) {
-        if let bioAuth = self.bioAuth {
-            guard bioAuth.available else {
-                let error = CredentialsManagerError(code: .biometricsFailed,
-                                                    cause: LAError(LAError.biometryNotAvailable))
-                return callback(.failure(error))
-            }
-
-            bioAuth.validateBiometric {
-                guard $0 == nil else {
-                    return callback(.failure(CredentialsManagerError(code: .biometricsFailed, cause: $0!)))
+        /// Retrieves credentials from the Keychain and yields new credentials using the refresh token if the access token
+        /// is expired. Otherwise, the retrieved credentials will be returned via the success case as they are not expired.
+        /// Renewed credentials will be stored in the Keychain. **This method is thread-safe**.
+        ///
+        /// ## Usage
+        ///
+        /// ```swift
+        /// credentialsManager.credentials { result in
+        ///     switch result {
+        ///     case .success(let credentials):
+        ///         print("Obtained credentials: \(credentials)")
+        ///     case .failure(let error):
+        ///         print("Failed with: \(error)")
+        ///     }
+        /// }
+        /// ```
+        ///
+        /// To avoid retrieving access tokens with too little time left, you can enforce a minimum TTL:
+        ///
+        /// ```swift
+        /// credentialsManager.credentials(minTTL: 60) { print($0) }
+        /// ```
+        ///
+        /// If you need to specify custom parameters or headers for the credentials renewal:
+        ///
+        /// ```swift
+        /// credentialsManager.credentials(parameters: ["key": "value"],
+        ///                                headers: ["key": "value"]) { print($0) }
+        /// ```
+        ///
+        /// When renewing credentials you can get a downscoped access token by requesting fewer scopes than were requested
+        /// on login. If you specify fewer scopes, the credentials will be renewed immediately, regardless of whether they
+        /// are expired or not.
+        ///
+        /// ```swift
+        /// credentialsManager.credentials(scope: "openid offline_access") { print($0) }
+        /// ```
+        ///
+        /// - Parameters:
+        ///   - scope:      Space-separated list of scope values to request when renewing credentials. Defaults to `nil`, which will ask for the same scopes that were requested on login.
+        ///   - minTTL:     Minimum time in seconds the access token must remain valid to avoid being renewed. Defaults to `0`.
+        ///   - parameters: Additional parameters to use when renewing credentials.
+        ///   - headers:    Additional headers to use when renewing credentials.
+        ///   - callback:   Callback that receives a `Result` containing either the user's credentials or an error.
+        /// - Requires: The scope `offline_access` to have been requested on login to get a refresh token from Auth0. If
+        /// the credentials are expired and there is no refresh token, the subscription will complete with a ``CredentialsManagerError/noRefreshToken`` error.
+        /// - Warning: Do not call `store(credentials:)` afterward. The Credentials Manager automatically persists the
+        /// renewed credentials. Since this method is thread-safe and ``store(credentials:)`` is not, calling it anyway can
+        /// cause concurrency issues.
+        /// - Important: To ensure that no concurrent renewal requests get made, do not call this method from multiple
+        /// Credentials Manager instances. The Credentials Manager cannot synchronize requests across instances.
+        ///
+        /// ## See Also
+        ///
+        /// - [Refresh Tokens](https://auth0.com/docs/secure/tokens/refresh-tokens)
+        /// - [Authentication API Endpoint](https://auth0.com/docs/api/authentication#refresh-token)
+        public func credentials(withScope scope: String? = nil, minTTL: Int = 0, parameters: [String: Any] = [:], headers: [String: String] = [:], callback: @escaping (CredentialsManagerResult<Credentials>) -> Void) {
+            if let bioAuth = bioAuth {
+                guard bioAuth.available else {
+                    let error = CredentialsManagerError(code: .biometricsFailed,
+                                                        cause: LAError(LAError.biometryNotAvailable))
+                    return callback(.failure(error))
                 }
 
-                self.retrieveCredentials(withScope: scope, minTTL: minTTL, parameters: parameters, headers: headers, callback: callback)
+                bioAuth.validateBiometric {
+                    guard $0 == nil else {
+                        return callback(.failure(CredentialsManagerError(code: .biometricsFailed, cause: $0!)))
+                    }
+
+                    self.retrieveCredentials(withScope: scope, minTTL: minTTL, parameters: parameters, headers: headers, callback: callback)
+                }
+            } else {
+                retrieveCredentials(withScope: scope, minTTL: minTTL, parameters: parameters, headers: headers, callback: callback)
             }
-        } else {
-            self.retrieveCredentials(withScope: scope, minTTL: minTTL, parameters: parameters, headers: headers, callback: callback)
         }
-    }
     #else
-    public func credentials(withScope scope: String? = nil, minTTL: Int = 0, parameters: [String: Any] = [:], headers: [String: String] = [:], callback: @escaping (CredentialsManagerResult<Credentials>) -> Void) {
-        self.retrieveCredentials(withScope: scope, minTTL: minTTL, parameters: parameters, headers: headers, callback: callback)
-    }
+        public func credentials(withScope scope: String? = nil, minTTL: Int = 0, parameters: [String: Any] = [:], headers: [String: String] = [:], callback: @escaping (CredentialsManagerResult<Credentials>) -> Void) {
+            retrieveCredentials(withScope: scope, minTTL: minTTL, parameters: parameters, headers: headers, callback: callback)
+        }
     #endif
 
     private func retrieveCredentials() -> Credentials? {
-        guard let data = self.storage.getEntry(forKey: self.storeKey) else { return nil }
+        guard let data = storage.getEntry(forKey: storeKey) else { return nil }
         return try? NSKeyedUnarchiver.unarchivedObject(ofClass: Credentials.self, from: data)
     }
 
     // swiftlint:disable:next function_body_length
     private func retrieveCredentials(withScope scope: String?, minTTL: Int, parameters: [String: Any], headers: [String: String], callback: @escaping (CredentialsManagerResult<Credentials>) -> Void) {
-        self.dispatchQueue.async {
+        dispatchQueue.async {
             self.dispatchGroup.enter()
 
             DispatchQueue.global(qos: .userInitiated).async {
@@ -315,11 +315,12 @@ public struct CredentialsManager {
                     return callback(.failure(.noCredentials))
                 }
                 guard self.hasExpired(credentials) ||
-                        self.willExpire(credentials, within: minTTL) ||
-                        self.hasScopeChanged(credentials, from: scope) else {
-                            self.dispatchGroup.leave()
-                            return callback(.success(credentials))
-                        }
+                    self.willExpire(credentials, within: minTTL) ||
+                    self.hasScopeChanged(credentials, from: scope)
+                else {
+                    self.dispatchGroup.leave()
+                    return callback(.success(credentials))
+                }
                 guard let refreshToken = credentials.refreshToken else {
                     self.dispatchGroup.leave()
                     return callback(.failure(.noRefreshToken))
@@ -331,7 +332,7 @@ public struct CredentialsManager {
                     .headers(headers)
                     .start { result in
                         switch result {
-                        case .success(let credentials):
+                        case let .success(credentials):
                             let newCredentials = Credentials(accessToken: credentials.accessToken,
                                                              tokenType: credentials.tokenType,
                                                              idToken: credentials.idToken,
@@ -350,7 +351,7 @@ public struct CredentialsManager {
                                 self.dispatchGroup.leave()
                                 callback(.success(newCredentials))
                             }
-                        case .failure(let error):
+                        case let .failure(error):
                             self.dispatchGroup.leave()
                             callback(.failure(CredentialsManagerError(code: .renewFailed, cause: error)))
                         }
@@ -379,14 +380,12 @@ public struct CredentialsManager {
 
         return false
     }
-
 }
 
 // MARK: - Combine
 
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.2, *)
 public extension CredentialsManager {
-
     /// Calls the `/oauth/revoke` endpoint to revoke the refresh token and then clears the credentials if the request
     /// was successful. Otherwise, the credentials are not cleared and the subscription completes with an error.
     ///
@@ -429,7 +428,7 @@ public extension CredentialsManager {
     func revoke(headers: [String: String] = [:]) -> AnyPublisher<Void, CredentialsManagerError> {
         return Deferred {
             Future { callback in
-                return self.revoke(headers: headers, callback)
+                self.revoke(headers: headers, callback)
             }
         }.eraseToAnyPublisher()
     }
@@ -507,145 +506,142 @@ public extension CredentialsManager {
     func credentials(withScope scope: String? = nil, minTTL: Int = 0, parameters: [String: Any] = [:], headers: [String: String] = [:]) -> AnyPublisher<Credentials, CredentialsManagerError> {
         return Deferred {
             Future { callback in
-                return self.credentials(withScope: scope,
-                                        minTTL: minTTL,
-                                        parameters: parameters,
-                                        headers: headers,
-                                        callback: callback)
+                self.credentials(withScope: scope,
+                                 minTTL: minTTL,
+                                 parameters: parameters,
+                                 headers: headers,
+                                 callback: callback)
             }
         }.eraseToAnyPublisher()
     }
-
 }
 
 // MARK: - Async/Await
 
 #if compiler(>=5.5) && canImport(_Concurrency)
-public extension CredentialsManager {
+    public extension CredentialsManager {
+        #if compiler(>=5.5.2)
+            /// Calls the `/oauth/revoke` endpoint to revoke the refresh token and then clears the credentials if the request
+            /// was successful. Otherwise, the credentials are not cleared and an error is thrown.
+            ///
+            /// ## Usage
+            ///
+            /// ```swift
+            /// do {
+            ///     try await credentialsManager.revoke()
+            ///     print("Revoked refresh token and cleared credentials")
+            /// } catch {
+            ///     print("Failed with: \(error)")
+            /// }
+            /// ```
+            ///
+            /// If you need to specify custom headers for the refresh token revocation:
+            ///
+            /// ```swift
+            /// try await credentialsManager.revoke(headers: ["key": "value"])
+            /// ```
+            ///
+            /// If no refresh token is available the endpoint is not called, the credentials are cleared, and no error is thrown.
+            ///
+            /// - Parameter headers: Additional headers to use when revoking the refresh token.
+            /// - Throws: An error of type ``CredentialsManagerError``.
+            ///
+            /// ## See Also
+            ///
+            /// - [Refresh Tokens](https://auth0.com/docs/secure/tokens/refresh-tokens)
+            /// - [Authentication API Endpoint](https://auth0.com/docs/api/authentication#revoke-refresh-token)
+            @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.2, *)
+            func revoke(headers: [String: String] = [:]) async throws {
+                return try await withCheckedThrowingContinuation { continuation in
+                    self.revoke(headers: headers, continuation.resume)
+                }
+            }
+        #else
+            @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+            func revoke(headers: [String: String] = [:]) async throws {
+                return try await withCheckedThrowingContinuation { continuation in
+                    self.revoke(headers: headers, continuation.resume)
+                }
+            }
+        #endif
 
-    #if compiler(>=5.5.2)
-    /// Calls the `/oauth/revoke` endpoint to revoke the refresh token and then clears the credentials if the request
-    /// was successful. Otherwise, the credentials are not cleared and an error is thrown.
-    ///
-    /// ## Usage
-    ///
-    /// ```swift
-    /// do {
-    ///     try await credentialsManager.revoke()
-    ///     print("Revoked refresh token and cleared credentials")
-    /// } catch {
-    ///     print("Failed with: \(error)")
-    /// }
-    /// ```
-    ///
-    /// If you need to specify custom headers for the refresh token revocation:
-    ///
-    /// ```swift
-    /// try await credentialsManager.revoke(headers: ["key": "value"])
-    /// ```
-    ///
-    /// If no refresh token is available the endpoint is not called, the credentials are cleared, and no error is thrown.
-    ///
-    /// - Parameter headers: Additional headers to use when revoking the refresh token.
-    /// - Throws: An error of type ``CredentialsManagerError``.
-    ///
-    /// ## See Also
-    ///
-    /// - [Refresh Tokens](https://auth0.com/docs/secure/tokens/refresh-tokens)
-    /// - [Authentication API Endpoint](https://auth0.com/docs/api/authentication#revoke-refresh-token)
-    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.2, *)
-    func revoke(headers: [String: String] = [:]) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.revoke(headers: headers, continuation.resume)
-        }
+        #if compiler(>=5.5.2)
+            /// Retrieves credentials from the Keychain and yields new credentials using the refresh token if the access token
+            /// is expired. Otherwise, return the retrieved credentials as they are not expired. Renewed credentials will be
+            /// stored in the Keychain. **This method is thread-safe**.
+            ///
+            /// ## Usage
+            ///
+            /// ```swift
+            /// do {
+            ///     let credentials = try await credentialsManager.credentials()
+            ///     print("Obtained credentials: \(credentials)")
+            /// } catch {
+            ///     print("Failed with: \(error)")
+            /// }
+            /// ```
+            ///
+            /// To avoid retrieving access tokens with too little time left, you can enforce a minimum TTL:
+            ///
+            /// ```swift
+            /// let credentials = try await credentialsManager.credentials(minTTL: 60)
+            /// ```
+            ///
+            /// If you need to specify custom parameters or headers for the credentials renewal:
+            ///
+            /// ```swift
+            /// let credentials = try await credentialsManager.credentials(parameters: ["key": "value"],
+            ///                                                            headers: ["key": "value"])
+            /// ```
+            ///
+            /// When renewing credentials you can get a downscoped access token by requesting fewer scopes than were requested
+            /// on login. If you specify fewer scopes, the credentials will be renewed immediately, regardless of whether they
+            /// are expired or not.
+            ///
+            /// ```swift
+            /// let credentials = try await credentialsManager.credentials(scope: "openid offline_access")
+            /// ```
+            ///
+            /// - Parameters:
+            ///   - scope:      Space-separated list of scope values to request when renewing credentials. Defaults to `nil`, which will ask for the same scopes that were requested on login.
+            ///   - minTTL:     Minimum time in seconds the access token must remain valid to avoid being renewed. Defaults to `0`.
+            ///   - parameters: Additional parameters to use when renewing credentials.
+            ///   - headers:    Additional headers to use when renewing credentials.
+            /// - Returns: The user's credentials.
+            /// - Throws: An error of type ``CredentialsManagerError``.
+            /// - Requires: The scope `offline_access` to have been requested on login to get a refresh token from Auth0. If
+            /// the credentials are expired and there is no refresh token, the subscription will complete with a ``CredentialsManagerError/noRefreshToken`` error.
+            /// - Warning: Do not call `store(credentials:)` afterward. The Credentials Manager automatically persists the
+            /// renewed credentials. Since this method is thread-safe and ``store(credentials:)`` is not, calling it anyway can
+            /// cause concurrency issues.
+            /// - Important: To ensure that no concurrent renewal requests get made, do not call this method from multiple
+            /// Credentials Manager instances. The Credentials Manager cannot synchronize requests across instances.
+            ///
+            /// ## See Also
+            ///
+            /// - [Refresh Tokens](https://auth0.com/docs/secure/tokens/refresh-tokens)
+            /// - [Authentication API Endpoint](https://auth0.com/docs/api/authentication#refresh-token)
+            @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.2, *)
+            func credentials(withScope scope: String? = nil, minTTL: Int = 0, parameters: [String: Any] = [:], headers: [String: String] = [:]) async throws -> Credentials {
+                return try await withCheckedThrowingContinuation { continuation in
+                    self.credentials(withScope: scope,
+                                     minTTL: minTTL,
+                                     parameters: parameters,
+                                     headers: headers,
+                                     callback: continuation.resume)
+                }
+            }
+        #else
+            @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+            func credentials(withScope scope: String? = nil, minTTL: Int = 0, parameters: [String: Any] = [:], headers: [String: String] = [:]) async throws -> Credentials {
+                return try await withCheckedThrowingContinuation { continuation in
+                    self.credentials(withScope: scope,
+                                     minTTL: minTTL,
+                                     parameters: parameters,
+                                     headers: headers,
+                                     callback: continuation.resume)
+                }
+            }
+        #endif
     }
-    #else
-    @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-    func revoke(headers: [String: String] = [:]) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.revoke(headers: headers, continuation.resume)
-        }
-    }
-    #endif
-
-    #if compiler(>=5.5.2)
-    /// Retrieves credentials from the Keychain and yields new credentials using the refresh token if the access token
-    /// is expired. Otherwise, return the retrieved credentials as they are not expired. Renewed credentials will be
-    /// stored in the Keychain. **This method is thread-safe**.
-    ///
-    /// ## Usage
-    ///
-    /// ```swift
-    /// do {
-    ///     let credentials = try await credentialsManager.credentials()
-    ///     print("Obtained credentials: \(credentials)")
-    /// } catch {
-    ///     print("Failed with: \(error)")
-    /// }
-    /// ```
-    ///
-    /// To avoid retrieving access tokens with too little time left, you can enforce a minimum TTL:
-    ///
-    /// ```swift
-    /// let credentials = try await credentialsManager.credentials(minTTL: 60)
-    /// ```
-    ///
-    /// If you need to specify custom parameters or headers for the credentials renewal:
-    ///
-    /// ```swift
-    /// let credentials = try await credentialsManager.credentials(parameters: ["key": "value"],
-    ///                                                            headers: ["key": "value"])
-    /// ```
-    ///
-    /// When renewing credentials you can get a downscoped access token by requesting fewer scopes than were requested
-    /// on login. If you specify fewer scopes, the credentials will be renewed immediately, regardless of whether they
-    /// are expired or not.
-    ///
-    /// ```swift
-    /// let credentials = try await credentialsManager.credentials(scope: "openid offline_access")
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - scope:      Space-separated list of scope values to request when renewing credentials. Defaults to `nil`, which will ask for the same scopes that were requested on login.
-    ///   - minTTL:     Minimum time in seconds the access token must remain valid to avoid being renewed. Defaults to `0`.
-    ///   - parameters: Additional parameters to use when renewing credentials.
-    ///   - headers:    Additional headers to use when renewing credentials.
-    /// - Returns: The user's credentials.
-    /// - Throws: An error of type ``CredentialsManagerError``.
-    /// - Requires: The scope `offline_access` to have been requested on login to get a refresh token from Auth0. If
-    /// the credentials are expired and there is no refresh token, the subscription will complete with a ``CredentialsManagerError/noRefreshToken`` error.
-    /// - Warning: Do not call `store(credentials:)` afterward. The Credentials Manager automatically persists the
-    /// renewed credentials. Since this method is thread-safe and ``store(credentials:)`` is not, calling it anyway can
-    /// cause concurrency issues.
-    /// - Important: To ensure that no concurrent renewal requests get made, do not call this method from multiple
-    /// Credentials Manager instances. The Credentials Manager cannot synchronize requests across instances.
-    ///
-    /// ## See Also
-    ///
-    /// - [Refresh Tokens](https://auth0.com/docs/secure/tokens/refresh-tokens)
-    /// - [Authentication API Endpoint](https://auth0.com/docs/api/authentication#refresh-token)
-    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.2, *)
-    func credentials(withScope scope: String? = nil, minTTL: Int = 0, parameters: [String: Any] = [:], headers: [String: String] = [:]) async throws -> Credentials {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.credentials(withScope: scope,
-                             minTTL: minTTL,
-                             parameters: parameters,
-                             headers: headers,
-                             callback: continuation.resume)
-        }
-    }
-    #else
-    @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-    func credentials(withScope scope: String? = nil, minTTL: Int = 0, parameters: [String: Any] = [:], headers: [String: String] = [:]) async throws -> Credentials {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.credentials(withScope: scope,
-                             minTTL: minTTL,
-                             parameters: parameters,
-                             headers: headers,
-                             callback: continuation.resume)
-        }
-    }
-    #endif
-
-}
 #endif

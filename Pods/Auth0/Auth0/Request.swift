@@ -1,10 +1,10 @@
 import Foundation
 #if canImport(Combine)
-import Combine
+    import Combine
 #endif
 
 #if DEBUG
-let parameterPropertyKey = "com.auth0.parameter"
+    let parameterPropertyKey = "com.auth0.parameter"
 #endif
 
 /**
@@ -14,7 +14,7 @@ let parameterPropertyKey = "com.auth0.parameter"
 
  ```swift
  let request: Request<Credentials, AuthenticationError> = // ...
- 
+
  request.start { result in
     print(result)
  }
@@ -60,7 +60,7 @@ public struct Request<T, E: Auth0APIError>: Requestable {
             } else if let httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: []) {
                 request.httpBody = httpBody
                 #if DEBUG
-                URLProtocol.setProperty(parameters, forKey: parameterPropertyKey, in: request)
+                    URLProtocol.setProperty(parameters, forKey: parameterPropertyKey, in: request)
                 #endif
             }
         }
@@ -76,11 +76,11 @@ public struct Request<T, E: Auth0APIError>: Requestable {
      - Parameter callback: Callback that receives the result of the request when it completes.
      */
     public func start(_ callback: @escaping Callback) {
-        let handler = self.handle
+        let handler = handle
         let request = self.request
         let logger = self.logger
 
-        logger?.trace(request: request, session: self.session)
+        logger?.trace(request: request, session: session)
 
         let task = session.dataTask(with: request, completionHandler: { data, response, error in
             if error == nil, let response = response {
@@ -97,10 +97,10 @@ public struct Request<T, E: Auth0APIError>: Requestable {
      - Parameter extraParameters: Additional parameters for the request.
      */
     public func parameters(_ extraParameters: [String: Any]) -> Self {
-        var parameters = extraParameters.merging(self.parameters) {(current, _) in current}
+        var parameters = extraParameters.merging(self.parameters) { current, _ in current }
         parameters["scope"] = includeRequiredScope(in: parameters["scope"] as? String)
 
-        return Request(session: self.session, url: self.url, method: self.method, handle: self.handle, parameters: parameters, headers: self.headers, logger: self.logger, telemetry: self.telemetry)
+        return Request(session: session, url: url, method: method, handle: handle, parameters: parameters, headers: headers, logger: logger, telemetry: telemetry)
     }
 
     /**
@@ -109,9 +109,9 @@ public struct Request<T, E: Auth0APIError>: Requestable {
      - Parameter extraHeaders: Additional headers for the request.
      */
     public func headers(_ extraHeaders: [String: String]) -> Self {
-        let headers = extraHeaders.merging(self.headers) {(current, _) in current}
+        let headers = extraHeaders.merging(self.headers) { current, _ in current }
 
-        return Request(session: self.session, url: self.url, method: self.method, handle: self.handle, parameters: self.parameters, headers: headers, logger: self.logger, telemetry: self.telemetry)
+        return Request(session: session, url: url, method: method, handle: handle, parameters: parameters, headers: headers, logger: logger, telemetry: telemetry)
     }
 }
 
@@ -119,7 +119,6 @@ public struct Request<T, E: Auth0APIError>: Requestable {
 
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.2, *)
 public extension Request {
-
     /**
      Combine publisher for the request.
 
@@ -128,35 +127,32 @@ public extension Request {
     func start() -> AnyPublisher<T, E> {
         return Deferred { Future(self.start) }.eraseToAnyPublisher()
     }
-
 }
 
 // MARK: - Async/Await
 
 #if compiler(>=5.5) && canImport(_Concurrency)
-public extension Request {
+    public extension Request {
+        #if compiler(>=5.5.2)
+            /**
+             Performs the request.
 
-    #if compiler(>=5.5.2)
-    /**
-     Performs the request.
+             - Throws: An error that conforms to ``Auth0APIError``; either an ``AuthenticationError`` or a ``ManagementError``.
+             */
 
-     - Throws: An error that conforms to ``Auth0APIError``; either an ``AuthenticationError`` or a ``ManagementError``.
-     */
-
-    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.2, *)
-    func start() async throws -> T {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.start(continuation.resume)
-        }
+            @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.2, *)
+            func start() async throws -> T {
+                return try await withCheckedThrowingContinuation { continuation in
+                    self.start(continuation.resume)
+                }
+            }
+        #else
+            @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+            func start() async throws -> T {
+                return try await withCheckedThrowingContinuation { continuation in
+                    self.start(continuation.resume)
+                }
+            }
+        #endif
     }
-    #else
-    @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-    func start() async throws -> T {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.start(continuation.resume)
-        }
-    }
-    #endif
-
-}
 #endif

@@ -10,11 +10,11 @@ import Foundation
 class Validation {
     static func isValidPassword(_ password: String) -> Bool {
         guard password.count >= 8 else { return false }
-        
+
         let pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$&*._-]).{8,}$"
         let regex = try? NSRegularExpression(pattern: pattern)
         let range = NSRange(location: 0, length: password.utf16.count)
-        
+
         return regex?.firstMatch(in: password, options: [], range: range) != nil
     }
 

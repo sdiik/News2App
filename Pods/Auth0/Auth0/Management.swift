@@ -13,7 +13,7 @@ struct Management: Trackable, Loggable {
 
     var defaultHeaders: [String: String] {
         return [
-            "Authorization": "Bearer \(token)"
+            "Authorization": "Bearer \(token)",
         ]
     }
 
