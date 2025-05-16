@@ -1,0 +1,44 @@
+PODS:
+  - Alamofire (5.10.2)
+  - Auth0 (2.3.2):
+    - JWTDecode (~> 3.0)
+    - SimpleKeychain (~> 1.0)
+  - JWTDecode (3.0.1)
+  - KeychainSwift (24.0.0)
+  - Kingfisher (7.12.0)
+  - LocalNotificationCenter (0.4.0)
+  - SimpleKeychain (1.0.1)
+  - SwiftLint (0.59.1)
+
+DEPENDENCIES:
+  - Alamofire
+  - Auth0
+  - KeychainSwift
+  - Kingfisher
+  - LocalNotificationCenter
+  - SwiftLint
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - Auth0
+    - JWTDecode
+    - KeychainSwift
+    - Kingfisher
+    - LocalNotificationCenter
+    - SimpleKeychain
+    - SwiftLint
+
+SPEC CHECKSUMS:
+  Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
+  Auth0: 64da28fdc5cd499aa516dc4bfd0ace8efae2c1da
+  JWTDecode: 2eed97c2fa46ccaf3049a787004eedf0be474a87
+  KeychainSwift: 007c4647486e4563adca839cf02cef00deb3b670
+  Kingfisher: 53a10ea35051a436b5fb626ca2dd8f3144d755e9
+  LocalNotificationCenter: 954b4b25c5558c1d37b1b4c6665d06bd9418951b
+  SimpleKeychain: 130211269f88f038d7dc5254cf0b1b9ce978c398
+  SwiftLint: 3d48e2fb2a3468fdaccf049e5e755df22fb40c2c
+
+PODFILE CHECKSUM: fb6267329fc707e28a243a23f6d2c3bf4da29bdd
+
+COCOAPODS: 1.16.2

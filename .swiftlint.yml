@@ -1,0 +1,23 @@
+whitespace_rules:
+  indentation:
+    indentation_width: 2
+  line_length:
+    warning: 100
+    error: 120
+  trailing_whitespace:
+    ignores_empty_lines: false
+  vertical_whitespace:
+    max_empty_lines: 1
+
+disabled_rules:
+  - todo
+  - identifier_name
+
+opt_in_rules:
+  - leading_whitespace
+  - vertical_whitespace
+  - trailing_whitespace
+  - file_length
+  - function_parameter_count
+  - statement_position
+  - colon
