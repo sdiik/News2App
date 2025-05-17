@@ -37,6 +37,7 @@ struct SectionView: View {
             HStack(spacing: 16) {
                 ForEach(viewModel.blogs.indices, id: \.self) { index in
                     CustomImageView(viewModel: viewModel.images[index])
+                        .padding(index == 0 ? .leading : .init())
                 }
             }
         }
