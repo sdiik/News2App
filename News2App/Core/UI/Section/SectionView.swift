@@ -17,6 +17,7 @@ struct SectionView: View {
         }
     }
 
+    @ViewBuilder
     private var sectionHeader: some View {
         HStack {
             CustomTextView(viewModel: viewModel.title)
@@ -30,13 +31,12 @@ struct SectionView: View {
         .padding(.horizontal)
     }
 
+    @ViewBuilder
     private var sectionBody: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 16) {
-                ForEach(Array(viewModel.blogs.enumerated()), id: \.offset) { index, _ in
-                    if index < viewModel.images.count {
-                        CustomImageView(viewModel: viewModel.images[index])
-                    }
+                ForEach(viewModel.blogs.indices, id: \.self) { index in
+                    CustomImageView(viewModel: viewModel.images[index])
                 }
             }
         }

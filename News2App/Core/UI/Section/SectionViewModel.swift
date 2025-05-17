@@ -52,7 +52,7 @@ class SectionViewModel: ObservableObject {
 
     private static func makeImageConfigure(from blog: Blog) -> CustomImageModel {
         return CustomImageModel(
-            url: blog.url ?? "",
+            url: blog.imageUrl ?? "",
             width: 100,
             height: 100
         )
