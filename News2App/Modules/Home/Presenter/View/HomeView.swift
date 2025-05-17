@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct HomeView: View {
-    @ObservedObject var viewModel: HomeViewModel
+    @StateObject private var viewModel: HomeViewModel
     @EnvironmentObject var loadingManager: LoadingManager
 
-    var it: String = ""
-
-    var item2: String = ""
+    init() {
+        _viewModel = StateObject(wrappedValue: HomeViewModel())
+    }
 
     var body: some View {
         ScrollView {
@@ -22,37 +22,43 @@ struct HomeView: View {
                     headerSection
                     bodySection
                 }
-                .onChange(of: viewModel.isLoading) { newValue in
+                .onChange(of: viewModel.state.viewState == .loading) { newValue in
                     loadingManager.isLoading = newValue
                 }
             }
         }
         .onAppear {
-            viewModel.fetchAllNews()
+            viewModel.send(.LoadArticel)
+            viewModel.send(.LoadBlog)
+            viewModel.send(.LoadReport)
         }
         .refreshable {
-            viewModel.fetchAllNews()
+            viewModel.send(.LoadArticel)
+            viewModel.send(.LoadBlog)
+            viewModel.send(.LoadReport)
         }
+        .navigationBarHidden(true)
     }
 
     private var headerSection: some View {
         VStack(spacing: 4) {
-            CustomTextView(viewModel: viewModel.title)
-            CustomTextView(viewModel: viewModel.desc)
+            CustomTextView(viewModel: viewModel.state.title)
+            CustomTextView(viewModel: viewModel.state.desc)
         }
     }
 
+    @ViewBuilder
     private var bodySection: some View {
         VStack(spacing: 8) {
-            if !viewModel.articelSection.blogs.isEmpty {
-                SectionView(viewModel: viewModel.articelSection)
+            if !viewModel.state.articelSection.blogs.isEmpty {
+                SectionView(viewModel: viewModel.state.articelSection)
             }
-            if !viewModel.blogSection.blogs.isEmpty {
-                SectionView(viewModel: viewModel.blogSection)
+            if !viewModel.state.blogSection.blogs.isEmpty {
+                SectionView(viewModel: viewModel.state.blogSection)
             }
 
-            if !viewModel.reportSection.blogs.isEmpty {
-                SectionView(viewModel: viewModel.reportSection)
+            if !viewModel.state.reportSection.blogs.isEmpty {
+                SectionView(viewModel: viewModel.state.reportSection)
             }
         }
     }

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		03A71AA949E18601F35AB51F /* Pods_News2AppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92BCF50A399495D0AAA68234 /* Pods_News2AppTests.framework */; };
+		0E36C14B2DD89E89006399B4 /* HomeViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E36C14A2DD89E84006399B4 /* HomeViewModel+State.swift */; };
 		0EB399162DC1F0F600AB9719 /* Auth0Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB399152DC1F0F600AB9719 /* Auth0Config.swift */; };
 		0EB399182DC1F18100AB9719 /* DecodeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB399172DC1F18100AB9719 /* DecodeHelper.swift */; };
 		0EB4FAF22DC1BC8D004487E6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0EB4FAEB2DC1BC8D004487E6 /* Preview Assets.xcassets */; };
@@ -106,6 +107,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0E36C14A2DD89E84006399B4 /* HomeViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeViewModel+State.swift"; sourceTree = "<group>"; };
 		0EB399152DC1F0F600AB9719 /* Auth0Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth0Config.swift; sourceTree = "<group>"; };
 		0EB399172DC1F18100AB9719 /* DecodeHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodeHelper.swift; sourceTree = "<group>"; };
 		0EB4FAAA2DC1B8D4004487E6 /* News2App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = News2App.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -870,6 +872,7 @@
 		0EE261B62DC598A700B2E4D0 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				0E36C14A2DD89E84006399B4 /* HomeViewModel+State.swift */,
 				0EE261B42DC5989B00B2E4D0 /* HomeViewModel.swift */,
 			);
 			path = ViewModel;
@@ -1223,6 +1226,7 @@
 				0EB4FB432DC1EA54004487E6 /* LoginRepositoryImpl.swift in Sources */,
 				0EE261752DC24C8200B2E4D0 /* DetailViewModel.swift in Sources */,
 				0EE261972DC4DD3400B2E4D0 /* CustomImageModel.swift in Sources */,
+				0E36C14B2DD89E89006399B4 /* HomeViewModel+State.swift in Sources */,
 				0EE261B92DC598B700B2E4D0 /* HomeView.swift in Sources */,
 				0EB4FB442DC1EA54004487E6 /* LoginUseCaseImpl.swift in Sources */,
 				0EB4FB0E2DC1D429004487E6 /* LoginViewModel.swift in Sources */,

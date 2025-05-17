@@ -9,26 +9,17 @@ import Combine
 import Foundation
 
 class HomeViewModel: ObservableObject {
-    @Published var title: CustomTextViewModel
-    @Published var desc: CustomTextViewModel
-    @Published var articelSection: SectionViewModel
-    @Published var blogSection: SectionViewModel
-    @Published var reportSection: SectionViewModel
-    @Published var isLoading: Bool = false
+    @Published var state: State
 
     let newsUseCase: FetchNewsUseCase
     private var cancellables = Set<AnyCancellable>()
 
     init(newsUseCase: FetchNewsUseCase = FetchNewsUseCaseImpl()) {
         self.newsUseCase = newsUseCase
-        title = CustomTextViewModel(config: Self.makeTitleConfigurate())
-        desc = CustomTextViewModel(config: Self.makeDescConfigurate())
-        articelSection = SectionViewModel()
-        blogSection = SectionViewModel()
-        reportSection = SectionViewModel()
+        state = State()
     }
 
-    private static func makeTitleConfigurate() -> CustomTextConfiguration {
+    static func makeTitleConfigurate() -> CustomTextConfiguration {
         return CustomTextConfiguration(
             title: "Good Morning",
             titleColor: .black,
@@ -38,7 +29,7 @@ class HomeViewModel: ObservableObject {
         )
     }
 
-    private static func makeDescConfigurate() -> CustomTextConfiguration {
+    static func makeDescConfigurate() -> CustomTextConfiguration {
         return CustomTextConfiguration(
             title: "Tohari",
             titleColor: .black.opacity(0.4),
@@ -48,7 +39,7 @@ class HomeViewModel: ObservableObject {
     }
 
     private func fetchNews(for type: NewsType, completion: @escaping ([Blog]) -> Void) {
-        newsUseCase.execute(type: type) { [weak self] result in
+        newsUseCase.execute(type: type) { result in
             DispatchQueue.main.async {
                 switch result {
                 case let .success(response):
@@ -60,34 +51,44 @@ class HomeViewModel: ObservableObject {
         }
     }
 
-    func fetchAllNews() {
-        isLoading = true
-
-        let group = DispatchGroup()
-
-        group.enter()
+    private func fetchArticle() {
+        state.viewState = .loading
         fetchNews(for: .article) { [weak self] blogs in
-            print("-----blogs 1--------\(blogs)")
-            self?.articelSection.updateBlogs(blogs)
-            group.leave()
+            guard let self = self else { return }
+            let updated = self.state.articelSection
+            updated.updateBlogs(blogs)
+            self.state = self.state.withUpdatedArticle(updated)
         }
+    }
 
-        group.enter()
+    private func fetchBlog() {
+        state.viewState = .loading
         fetchNews(for: .blog) { [weak self] blogs in
-            print("-----blogs 2--------\(blogs)")
-            self?.blogSection.updateBlogs(blogs)
-            group.leave()
+            guard let self = self else { return }
+            let updated = self.state.blogSection
+            updated.updateBlogs(blogs)
+            self.state = self.state.withUpdatedBlog(updated)
         }
+    }
 
-        group.enter()
+    private func fetchReport() {
+        state.viewState = .loading
         fetchNews(for: .report) { [weak self] blogs in
-            print("-----blogs 3--------\(blogs)")
-            self?.reportSection.updateBlogs(blogs)
-            group.leave()
+            guard let self = self else { return }
+            let updated = self.state.reportSection
+            updated.updateBlogs(blogs)
+            self.state = self.state.withUpdatedReport(updated)
         }
+    }
 
-        group.notify(queue: .main) { [weak self] in
-            self?.isLoading = false
+    func send(_ action: Action) {
+        switch action {
+        case .LoadArticel:
+            fetchArticle()
+        case .LoadBlog:
+            fetchBlog()
+        case .LoadReport:
+            fetchReport()
         }
     }
 }
