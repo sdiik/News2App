@@ -14,6 +14,7 @@ target 'News2App' do
   pod 'KeychainSwift'
   pod 'LocalNotificationCenter'
   pod 'SwiftLint'
+  pod 'SwiftGen', '~> 6.0'
 
   target 'News2AppTests' do
     inherit! :search_paths
