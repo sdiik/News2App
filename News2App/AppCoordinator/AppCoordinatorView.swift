@@ -25,7 +25,7 @@ struct AppCoordinatorView: View {
                 case .register:
                     RegisterView(viewModel: RegisterViewModel())
                 case .home:
-                    HomeView(viewModel: HomeViewModel())
+                    HomeView()
                 case .detail:
                     DetailView(viewModel: DetailViewModel(id: 30807, detailType: .articles))
                 }
