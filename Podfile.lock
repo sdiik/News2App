@@ -8,6 +8,7 @@ PODS:
   - Kingfisher (7.12.0)
   - LocalNotificationCenter (0.4.0)
   - SimpleKeychain (1.0.1)
+  - SwiftGen (6.6.3)
   - SwiftLint (0.59.1)
 
 DEPENDENCIES:
@@ -16,6 +17,7 @@ DEPENDENCIES:
   - KeychainSwift
   - Kingfisher
   - LocalNotificationCenter
+  - SwiftGen (~> 6.0)
   - SwiftLint
 
 SPEC REPOS:
@@ -27,6 +29,7 @@ SPEC REPOS:
     - Kingfisher
     - LocalNotificationCenter
     - SimpleKeychain
+    - SwiftGen
     - SwiftLint
 
 SPEC CHECKSUMS:
@@ -37,8 +40,9 @@ SPEC CHECKSUMS:
   Kingfisher: 53a10ea35051a436b5fb626ca2dd8f3144d755e9
   LocalNotificationCenter: 954b4b25c5558c1d37b1b4c6665d06bd9418951b
   SimpleKeychain: 130211269f88f038d7dc5254cf0b1b9ce978c398
+  SwiftGen: 4993cbf71cbc4886f775e26f8d5c3a1188ec9f99
   SwiftLint: 3d48e2fb2a3468fdaccf049e5e755df22fb40c2c
 
-PODFILE CHECKSUM: fb6267329fc707e28a243a23f6d2c3bf4da29bdd
+PODFILE CHECKSUM: efee5bdf6391177fe720b9fded0590b17ad9f55c
 
 COCOAPODS: 1.16.2
