@@ -13,7 +13,7 @@ struct HomeView: View {
 
     var it: String = ""
 
-    var item2: String = ""
+    var item2     : String  = ""
 
     var body: some View {
         ScrollView {
