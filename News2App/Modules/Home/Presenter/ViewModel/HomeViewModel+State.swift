@@ -13,11 +13,11 @@ extension HomeViewModel {
     }
 
     struct State {
-        var articelSection: SectionViewModel = SectionViewModel()
-        var blogSection: SectionViewModel = SectionViewModel()
-        var reportSection: SectionViewModel = SectionViewModel()
-        var title: CustomTextViewModel = CustomTextViewModel(config: makeTitleConfigurate())
-        var desc: CustomTextViewModel = CustomTextViewModel(config: makeDescConfigurate())
+        var articelSection: SectionViewModel = .init()
+        var blogSection: SectionViewModel = .init()
+        var reportSection: SectionViewModel = .init()
+        var title: CustomTextViewModel = .init(config: makeTitleConfigurate())
+        var desc: CustomTextViewModel = .init(config: makeDescConfigurate())
         var viewState: ViewState = .loading
     }
 
