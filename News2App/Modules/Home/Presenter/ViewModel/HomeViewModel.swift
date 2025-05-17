@@ -10,7 +10,7 @@ import Foundation
 
 class HomeViewModel: ObservableObject {
     @Published var state: State
-    
+
     let newsUseCase: FetchNewsUseCase
     private var cancellables = Set<AnyCancellable>()
 
@@ -50,28 +50,37 @@ class HomeViewModel: ObservableObject {
             }
         }
     }
-    
+
     private func fetchArticle() {
         state.viewState = .loading
         fetchNews(for: .article) { [weak self] blogs in
-            self?.state.articelSection.updateBlogs(blogs)
+            guard let self = self else { return }
+            let updated = self.state.articelSection
+            updated.updateBlogs(blogs)
+            self.state = self.state.withUpdatedArticle(updated)
         }
     }
-    
+
     private func fetchBlog() {
         state.viewState = .loading
         fetchNews(for: .blog) { [weak self] blogs in
-            self?.state.blogSection.updateBlogs(blogs)
+            guard let self = self else { return }
+            let updated = self.state.blogSection
+            updated.updateBlogs(blogs)
+            self.state = self.state.withUpdatedBlog(updated)
         }
     }
-    
+
     private func fetchReport() {
         state.viewState = .loading
         fetchNews(for: .report) { [weak self] blogs in
-            self?.state.reportSection.updateBlogs(blogs)
+            guard let self = self else { return }
+            let updated = self.state.reportSection
+            updated.updateBlogs(blogs)
+            self.state = self.state.withUpdatedReport(updated)
         }
     }
-    
+
     func send(_ action: Action) {
         switch action {
         case .LoadArticel:

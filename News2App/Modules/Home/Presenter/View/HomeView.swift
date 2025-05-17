@@ -14,7 +14,7 @@ struct HomeView: View {
     init() {
         _viewModel = StateObject(wrappedValue: HomeViewModel())
     }
-    
+
     var body: some View {
         ScrollView {
             BasicView {
